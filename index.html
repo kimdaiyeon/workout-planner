@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>4분할 운동 플래너</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F2EE; --surface:#FFFFFF; --ink:#16201B; --muted:#5F6B65; --line:#D9DDD6;
+  --accent:#1E5EFF; --accent-ink:#FFFFFF; --soft:#E7ECFF; --chip:#E4E7E1;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141816; --surface:#1D231F; --ink:#E9ECE8; --muted:#98A39D; --line:#2E3733;
+  --accent:#7DA0FF; --accent-ink:#0E1A3A; --soft:#22304F; --chip:#262D29; } }
+:root[data-theme="dark"]{ --bg:#141816; --surface:#1D231F; --ink:#E9ECE8; --muted:#98A39D; --line:#2E3733;
+  --accent:#7DA0FF; --accent-ink:#0E1A3A; --soft:#22304F; --chip:#262D29; }
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:inherit}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font-family:"IBM Plex Sans KR","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;
+  font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased}
+.wrap{max-width:1060px; margin:0 auto; padding:28px 20px 80px}
+header h1{font-size:1.05rem; font-weight:500; color:var(--muted); margin:0 0 6px}
+header p{margin:0; color:var(--muted); font-size:.95rem; max-width:56ch}
+.layout{display:grid; grid-template-columns:310px 1fr; gap:28px; align-items:start; margin-top:22px}
+@media (max-width:840px){.layout{grid-template-columns:1fr}}
+aside{position:sticky; top:calc(env(safe-area-inset-top,0px) + 16px); display:flex; flex-direction:column; gap:20px}
+@media (max-width:840px){aside{position:static}}
+.step h2{font-size:.9rem; font-weight:500; color:var(--muted); margin:0 0 8px}
+.week{display:grid; grid-template-columns:repeat(7,1fr); gap:4px}
+.day{border:1px solid var(--line); border-radius:8px; padding:6px 2px; text-align:center; font-size:.8rem; line-height:1.25; color:var(--muted); background:var(--surface)}
+.day b{display:block; font-size:.85rem; color:var(--ink); font-weight:700}
+.day.today{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
+.day.free b{color:var(--muted); font-weight:500}
+.parts{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:8px}
+.part{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:12px 6px 10px; cursor:pointer; text-align:center; color:var(--muted);
+  font:inherit; font-weight:700; font-size:1.35rem; letter-spacing:-.02em; line-height:1}
+.part small{display:block; font-size:.72rem; font-weight:500; margin-top:6px; color:var(--muted); letter-spacing:0}
+.part[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.part[aria-pressed="true"] small{color:var(--bg); opacity:.75}
+.part:focus-visible,.seg button:focus-visible,.ctr button:focus-visible,.regen:focus-visible,.swap:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+.seg{display:flex; gap:4px; background:var(--chip); padding:4px; border-radius:10px}
+.seg button{flex:1; border:0; border-radius:7px; background:none; padding:7px 4px; font:inherit; font-weight:500; color:var(--muted); cursor:pointer; font-size:.9rem}
+.seg button[aria-pressed="true"]{background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.eq{display:flex; flex-direction:column; gap:6px; margin-top:8px}
+.eqrow{display:grid; grid-template-columns:1fr auto; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:8px 10px 8px 12px}
+.eqrow.off{opacity:.55}
+.eqrow .nm{font-weight:500}
+.eqrow .nm small{display:block; color:var(--muted); font-size:.78rem; font-weight:400}
+.ctr{display:inline-flex; align-items:center; gap:2px}
+.ctr button{width:30px; height:30px; border-radius:8px; border:1px solid var(--line); background:var(--chip); color:var(--ink); font:inherit; font-weight:700; cursor:pointer}
+.ctr button:disabled{opacity:.35; cursor:default}
+.ctr output{min-width:3.4ch; text-align:center; font-weight:700; font-variant-numeric:tabular-nums; font-size:.95rem}
+.inline{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.people{display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:6px 10px}
+.people .ctr output{font-size:1.1rem}
+.regen{width:100%; padding:11px 12px; border-radius:10px; border:0; background:var(--accent); color:var(--accent-ink); font:inherit; font-weight:700; cursor:pointer}
+main h2{font-size:1.5rem; font-weight:700; letter-spacing:-.02em; margin:0 0 2px}
+main .sub{color:var(--muted); font-size:.95rem; margin:0 0 14px}
+.warm{background:var(--soft); border-radius:12px; padding:14px 16px; font-size:.95rem; margin-bottom:18px}
+.warm b,.rot b{font-weight:700}
+.rot{border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin-bottom:18px; font-size:.95rem; background:var(--surface)}
+.cycle{margin-top:22px}
+.cycle h3{font-size:1.05rem; font-weight:700; margin:0 0 10px; display:flex; align-items:baseline; gap:10px}
+.cycle h3 span{color:var(--muted); font-weight:500; font-size:.9rem}
+ol.routine{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px}
+.ex{background:var(--surface); border:1px solid var(--line); border-radius:14px; overflow:hidden}
+.ex-head{display:grid; grid-template-columns:auto 1fr auto; gap:14px; align-items:center; padding:14px 16px; cursor:pointer}
+.ex-head:focus-visible{outline:3px solid var(--accent); outline-offset:-3px}
+.num{font-weight:700; font-size:1.6rem; line-height:1; color:var(--accent); min-width:1.4ch}
+.slot{font-size:.78rem; font-weight:700; color:var(--accent); min-width:6.5ch; line-height:1.2}
+.ex-title{font-weight:700; font-size:1.1rem; margin:0}
+.ex-sub{color:var(--muted); font-size:.9rem; margin:3px 0 0}
+.tag{display:inline-block; background:var(--chip); border-radius:6px; padding:2px 8px; font-size:.8rem; font-weight:500; margin-right:6px; color:var(--ink)}
+.chev{width:22px; height:22px; color:var(--muted); transition:transform .2s}
+.ex.open .chev{transform:rotate(180deg)}
+.ex-body{display:none; padding:0 16px 16px; border-top:1px solid var(--line)}
+.ex.open .ex-body{display:block}
+.demo{display:block; width:100%; max-width:340px; aspect-ratio:11/10; margin:14px auto 0; background:var(--bg); border-radius:12px}
+.demo-cap{text-align:center; color:var(--muted); font-size:.82rem; margin:6px 0 0}
+.ex-body h4{margin:14px 0 6px; font-size:.9rem; font-weight:500; color:var(--muted)}
+.ex-body ol{margin:0; padding-left:1.3em} .ex-body li{margin:4px 0} .ex-body ul{margin:0; padding-left:1.1em}
+.swap{margin-top:14px; padding:8px 12px; border-radius:8px; border:1px solid var(--line); background:none; color:var(--ink); font:inherit; font-size:.9rem; cursor:pointer}
+.swap:hover{border-color:var(--accent)}
+.note{color:var(--muted); font-size:.88rem; margin:10px 0 0}
+.empty{padding:24px; text-align:center; color:var(--muted); border:1px dashed var(--line); border-radius:14px}
+footer{margin-top:40px; color:var(--muted); font-size:.85rem; max-width:64ch}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>4분할 운동 플래너</h1>
+  <p>오늘 부위, 장소와 쓸 수 있는 기구, 인원, 시간을 고르면 루틴이 나옵니다. 여럿이면 기구 자리마다 운동을 배정하고 사이클로 돕니다.</p>
+</header>
+
+<div class="layout">
+<aside>
+  <section class="step">
+    <h2>1. 오늘 할 부위</h2>
+    <div class="week" id="week"></div>
+    <div class="parts">
+      <button class="part" data-part="back">등<small>월</small></button>
+      <button class="part" data-part="chest">가슴<small>화</small></button>
+      <button class="part" data-part="legs">하체<small>수</small></button>
+      <button class="part" data-part="shoulder">어깨<small>목</small></button>
+    </div>
+  </section>
+
+  <section class="step">
+    <h2>2. 장소와 오늘 쓸 수 있는 기구</h2>
+    <div class="seg" id="place"><button data-p="home">집</button><button data-p="gym">회사 헬스장</button></div>
+    <div class="eq" id="eq"></div>
+  </section>
+
+  <section class="step">
+    <div class="inline">
+      <div><h2>3. 인원</h2>
+        <div class="people"><span>명</span>
+          <div class="ctr"><button id="pm" aria-label="인원 줄이기">−</button><output id="pv">1</output><button id="pp" aria-label="인원 늘리기">+</button></div>
+        </div>
+      </div>
+      <div><h2>4. 시간</h2>
+        <div class="seg" id="time"><button data-t="20">20분</button><button data-t="35">30~40분</button><button data-t="60">1시간</button></div>
+      </div>
+    </div>
+  </section>
+
+  <button class="regen" id="regen">다른 조합으로 다시 짜기</button>
+</aside>
+
+<main>
+  <h2 id="title"></h2>
+  <p class="sub" id="subtitle"></p>
+  <div class="warm" id="warm"></div>
+  <div class="rot" id="rot" hidden></div>
+  <div id="out"></div>
+  <p class="note" id="note"></p>
+</main>
+</div>
+
+<footer>세트 사이 휴식은 60~90초. 마지막 세트에서 1~2회 남을 정도의 무게가 기준이고, 통증이 있으면 그 운동은 빼고 다음으로 넘어가면 됩니다.</footer>
+</div>
+
+<script>
+// ── equipment: what the user counts, and which "slots" each unit provides ──
+// slot = one place a person can stand and work. a cable machine unit = left cable + center bar + right cable.
+const EQUIP = {
+  home:[
+    {id:"db",   name:"덤벨",   unit:"세트", hint:"양손 1쌍 = 1자리",       slots:n=>Array.from({length:n},(_,i)=>({eq:"db",   label:`덤벨 ${n>1?i+1:""}`.trim()}))},
+    {id:"kb",   name:"케틀벨", unit:"개",   hint:"1개 = 1자리",             slots:n=>Array.from({length:n},(_,i)=>({eq:"kb",   label:`케틀벨 ${n>1?i+1:""}`.trim()}))},
+    {id:"band", name:"밴드",   unit:"개",   hint:"1개 = 1자리",             slots:n=>Array.from({length:n},(_,i)=>({eq:"band", label:`밴드 ${n>1?i+1:""}`.trim()}))},
+    {id:"bar",  name:"풀업바", unit:"개",   hint:"1개 = 1자리",             slots:n=>Array.from({length:n},(_,i)=>({eq:"bar",  label:`풀업바 ${n>1?i+1:""}`.trim()}))},
+  ],
+  gym:[
+    {id:"cable",    name:"케이블머신", unit:"대", hint:"1대 = 왼쪽·오른쪽 케이블 + 중앙 바, 3자리",
+      slots:n=>[].concat(...Array.from({length:n},(_,i)=>{const p=n>1?`${i+1}번 `:""; return [{eq:"cable",label:`${p}케이블 왼쪽`},{eq:"bar",label:`${p}중앙 바`},{eq:"cable",label:`${p}케이블 오른쪽`}];}))},
+    {id:"db",       name:"덤벨 · 벤치", unit:"자리", hint:"덤벨과 벤치를 동시에 쓸 수 있는 자리 수", slots:n=>Array.from({length:n},(_,i)=>({eq:"db",label:`덤벨 ${n>1?i+1:""}`.trim()}))},
+    {id:"smith",    name:"스미스머신", unit:"대", hint:"1대 = 1자리", slots:n=>Array.from({length:n},(_,i)=>({eq:"smith",label:`스미스 ${n>1?i+1:""}`.trim()}))},
+    {id:"legpress", name:"레그프레스", unit:"대", hint:"1대 = 1자리", slots:n=>Array.from({length:n},(_,i)=>({eq:"legpress",label:`레그프레스 ${n>1?i+1:""}`.trim()}))},
+  ]
+};
+const EQNAME = {body:"맨몸", db:"덤벨", kb:"케틀벨", band:"밴드", bar:"바", cable:"케이블", smith:"스미스", legpress:"레그프레스"};
+const PARTS = {
+  back:{ name:"등", patterns:["vertical","horizontal","lat","scap","extension"],
+    warm:"어깨뼈 조이기·벌리기 15회, 캣카우 10회, 가벼운 로우 15회. 등은 팔이 아니라 어깨뼈가 움직여야 하니 웜업에서 그 감각을 먼저 잡습니다." },
+  chest:{ name:"가슴", patterns:["press","upper","fly","inner","stability"],
+    warm:"팔 벌려 가슴 열기 15회, 무릎 대고 푸시업 10회, 어깨 돌리기. 손목이 뻐근하면 손목 돌리기도 1분." },
+  legs:{ name:"하체", patterns:["squat","hinge","unilateral","glute","calf"],
+    warm:"맨몸 스쿼트 15회, 힙힌지 연습 10회(엉덩이만 뒤로), 다리 앞뒤 스윙 각 10회, 발목 돌리기." },
+  shoulder:{ name:"어깨", patterns:["press","lateral","rear","front","stability"],
+    warm:"팔 돌리기 앞뒤 각 15회, 밴드나 맨손으로 풀어파트 15회, 가벼운 프레스 15회. 어깨는 웜업 없이 들면 다치기 쉬운 부위라 5분은 꼭 챙기세요." },
+};
+const WEEK = ["일","월","화","수","목","금","토"];
+const BASE = {1:"back", 2:"chest", 3:"legs", 4:"shoulder"};
+// solo: exercises & sets. group: cycles × sets per cycle
+const TIME = {20:{ex:3, sets:3, rest:60, cycles:1, gsets:4}, 35:{ex:5, sets:3, rest:75, cycles:2, gsets:4}, 60:{ex:7, sets:4, rest:75, cycles:3, gsets:4}};
+
+const EX = [
+// ── 어깨 ──
+{name:"덤벨 숄더 프레스", part:"shoulder", pattern:"press", equip:["db"], pri:3, sets:3, reps:"8~12",
+ steps:["앉거나 서서 덤벨을 귀 옆, 팔꿈치는 몸 약간 앞쪽에 둡니다.","숨을 내쉬며 머리 위로 밀어 올리고, 정점에서 팔꿈치를 완전히 잠그지 않습니다.","3초 정도로 천천히 내려 시작 위치까지 옵니다."],
+ mistakes:["허리를 뒤로 꺾어서 미는 것 — 코어에 힘을 주고 갈비뼈를 내립니다.","팔꿈치가 옆으로 완전히 벌어지는 것 — 약 30도 앞을 향하게."]},
+{name:"케틀벨 프레스", part:"shoulder", pattern:"press", equip:["kb"], pri:3, sets:3, reps:"한쪽 8~10",
+ steps:["케틀벨을 랙 포지션(가슴 앞, 손목 세워 팔뚝에 밀착)에 둡니다.","팔뚝을 세운 채로 곧게 위로 밀어 올립니다.","천천히 랙 위치로 내리고 반대쪽도 같은 횟수."],
+ mistakes:["손목이 꺾여서 케틀벨이 뒤로 젖혀지는 것 — 손목은 항상 곧게.","몸통이 옆으로 기울어지는 것 — 반대쪽 발에도 체중을 균등히."]},
+{name:"밴드 숄더 프레스", part:"shoulder", pattern:"press", equip:["band"], pri:2, sets:3, reps:"12~15",
+ steps:["밴드를 발로 밟고 양손으로 어깨 높이에서 잡습니다.","위로 밀어 올리며 정점에서 1초 멈춥니다.","저항을 느끼며 천천히 내립니다."],
+ mistakes:["정점에서 밴드가 느슨해지는 것 — 서 있는 폭을 넓혀 장력을 유지.","허리를 뒤로 꺾는 것."]},
+{name:"파이크 푸시업", part:"shoulder", pattern:"press", equip:["body"], pri:1, sets:3, reps:"8~12",
+ steps:["엎드려 엉덩이를 높이 들어 몸을 ㅅ자로 만들고 시선은 발 쪽.","정수리가 바닥을 향하도록 팔꿈치를 굽혀 내려갑니다.","어깨로 밀어 올려 시작 자세로."],
+ mistakes:["엉덩이가 낮아져서 가슴 운동이 되는 것 — 발을 몸 쪽으로 더 당깁니다.","머리를 앞으로 내미는 것 — 정수리가 손 사이 바닥을 향해야."]},
+{name:"덤벨 레터럴 레이즈", part:"shoulder", pattern:"lateral", equip:["db"], pri:3, sets:3, reps:"12~15",
+ steps:["덤벨을 허벅지 옆에 들고 팔꿈치를 살짝 굽힙니다.","팔꿈치가 먼저 올라가는 느낌으로 어깨 높이까지 옆으로 올립니다.","올릴 때보다 2배 느리게 내립니다."],
+ mistakes:["어깨 높이보다 위로 올리는 것 — 승모근이 개입합니다.","반동으로 튕겨 올리는 것 — 무게를 줄이고 천천히."]},
+{name:"밴드 레터럴 레이즈", part:"shoulder", pattern:"lateral", equip:["band"], pri:2, sets:3, reps:"15~20",
+ steps:["밴드를 한 발로 밟고 반대편 손으로 잡습니다.","팔을 옆으로 어깨 높이까지 올리며 정점에서 1초.","천천히 내리고 반대쪽."],
+ mistakes:["몸을 옆으로 기울여 보조하는 것.","손목을 위로 꺾는 것 — 손등이 위를 향하게 유지."]},
+{name:"케이블 레터럴 레이즈", part:"shoulder", pattern:"lateral", equip:["cable"], pri:3, sets:3, reps:"12~15",
+ steps:["케이블을 가장 낮게 두고 몸 반대쪽 손으로 잡습니다.","케이블이 몸 앞을 가로지르며 팔을 옆으로 올립니다.","저항을 느끼며 천천히 내립니다."],
+ mistakes:["몸통을 회전시켜 당기는 것.","팔꿈치를 완전히 편 채로 하는 것 — 살짝 굽혀야 관절 부담이 줍니다."]},
+{name:"벤트오버 리버스 플라이", part:"shoulder", pattern:"rear", equip:["db"], pri:3, sets:3, reps:"12~15",
+ steps:["상체를 45도 정도 숙이고 가벼운 덤벨을 아래로 늘어뜨립니다.","팔꿈치를 살짝 굽힌 채 양팔을 옆으로 벌려 어깨뼈를 모읍니다.","천천히 내립니다."],
+ mistakes:["무게가 무거워서 승모근으로 들어올리는 것 — 후면 어깨는 아주 가벼운 무게로.","허리가 둥글게 말리는 것 — 등을 평평하게."]},
+{name:"밴드 페이스 풀", part:"shoulder", pattern:"rear", equip:["band"], pri:3, sets:3, reps:"15~20",
+ steps:["밴드를 얼굴 높이에 고정하고 양손으로 잡습니다.","팔꿈치를 높게 유지하며 얼굴 쪽으로 당기고, 손은 귀 옆까지.","어깨뼈를 뒤로 모은 상태에서 1초 멈춘 뒤 천천히 풉니다."],
+ mistakes:["팔꿈치가 아래로 떨어져 로우가 되는 것 — 팔꿈치는 손보다 높거나 같게.","몸이 뒤로 기울어지는 것."]},
+{name:"케이블 페이스 풀", part:"shoulder", pattern:"rear", equip:["cable"], pri:3, sets:3, reps:"12~15",
+ steps:["로프를 얼굴 높이로 세팅하고 한 걸음 뒤로 물러섭니다.","팔꿈치를 높게 유지하며 얼굴 쪽으로 당깁니다.","정점에서 어깨뼈를 모은 뒤 천천히 풉니다."],
+ mistakes:["허리를 뒤로 젖혀 당기는 것.","손목으로 당기는 것 — 팔꿈치가 뒤로 간다는 느낌."]},
+{name:"밴드 풀어파트", part:"shoulder", pattern:"rear", equip:["band"], pri:2, sets:3, reps:"15~20",
+ steps:["밴드를 어깨 높이에서 어깨너비로 잡습니다.","팔을 편 채 양옆으로 벌려 밴드가 가슴에 닿게.","어깨뼈를 모은 뒤 천천히 돌아옵니다."],
+ mistakes:["어깨가 위로 솟는 것 — 어깨를 내리고 시작.","팔꿈치를 굽혀 당기는 것."]},
+{name:"프론 Y 레이즈", part:"shoulder", pattern:"rear", equip:["body"], pri:1, sets:3, reps:"12~15",
+ steps:["엎드려 팔을 Y자로 뻗고 엄지를 위로.","어깨뼈를 아래로 내리며 팔을 바닥에서 들어올립니다.","2초 유지 후 천천히 내립니다."],
+ mistakes:["목을 뒤로 꺾어 드는 것 — 시선은 바닥.","어깨가 귀 쪽으로 올라오는 것."]},
+{name:"덤벨 프론트 레이즈", part:"shoulder", pattern:"front", equip:["db"], pri:2, sets:2, reps:"12~15",
+ steps:["덤벨을 허벅지 앞에 들고 팔꿈치를 살짝 굽힙니다.","눈높이까지 앞으로 올립니다.","천천히 내립니다. 양팔 교대로 해도 됩니다."],
+ mistakes:["몸을 뒤로 기울여 반동을 쓰는 것.","눈높이보다 높이 올리는 것."]},
+{name:"밴드 프론트 레이즈", part:"shoulder", pattern:"front", equip:["band"], pri:1, sets:2, reps:"15",
+ steps:["밴드를 밟고 양손으로 잡습니다.","팔을 앞으로 눈높이까지 올립니다.","천천히 내립니다."],
+ mistakes:["어깨가 위로 솟는 것.","반동 사용."]},
+{name:"케틀벨 헤일로", part:"shoulder", pattern:"stability", equip:["kb"], pri:3, sets:2, reps:"양방향 각 8",
+ steps:["케틀벨을 뒤집어 양손으로 뿔을 잡고 가슴 앞에 둡니다.","머리 주위로 천천히 원을 그리며 돌립니다. 팔꿈치는 가능한 붙여서.","반대 방향도 같은 횟수."],
+ mistakes:["허리를 옆으로 꺾어 보조하는 것 — 몸통은 고정.","너무 빨리 돌리는 것 — 한 바퀴 4초."]},
+{name:"덤벨 아놀드 프레스", part:"shoulder", pattern:"stability", equip:["db"], pri:2, sets:2, reps:"10~12",
+ steps:["덤벨을 손바닥이 몸을 향하게 얼굴 앞에 둡니다.","밀어 올리며 손바닥을 바깥으로 돌려 정점에서 앞을 향하게.","역순으로 돌리며 내립니다."],
+ mistakes:["회전을 너무 빨리 해서 어깨에 충격이 가는 것.","허리 꺾기."]},
+{name:"월 워크", part:"shoulder", pattern:"stability", equip:["body"], pri:1, sets:2, reps:"4~6회",
+ steps:["벽에 발을 대고 엎드린 자세(발이 벽, 손이 바닥)에서 시작.","발을 벽 위로 올리며 손을 벽 쪽으로 걸어가 몸을 세웁니다.","가능한 만큼 올라갔다가 천천히 내려옵니다."],
+ mistakes:["허리가 과하게 꺾이는 것 — 복부에 힘을 주고 갈비뼈를 내립니다.","어깨가 귀에 붙는 것 — 어깨를 귀에서 멀리."]},
+
+// ── 등 ──
+{name:"풀업", part:"back", pattern:"vertical", equip:["bar"], pri:4, sets:3, reps:"최대 (5~10)",
+ steps:["바를 어깨너비보다 약간 넓게 오버그립으로 잡고 매달립니다.","어깨뼈를 아래로 내리는 것부터 시작해 가슴을 바로 끌어올립니다.","턱이 바를 넘으면 천천히 내려옵니다. 완전히 펴지기 전에 다음 회."],
+ mistakes:["팔로만 당기는 것 — 팔꿈치를 뒤 아래로 내린다고 생각합니다.","반동(키핑)으로 올라가는 것.","어렵다면 밴드를 걸거나 네거티브(내려오기만) 위주로."]},
+{name:"친업", part:"back", pattern:"vertical", equip:["bar"], pri:2, sets:3, reps:"6~10",
+ steps:["손바닥이 몸을 향하게 어깨너비로 잡습니다.","팔꿈치를 옆구리로 붙인다는 느낌으로 당깁니다.","천천히 내려옵니다."],
+ mistakes:["어깨가 올라가서 목이 짧아지는 것.","마지막에 팔을 완전히 펴서 어깨에 매달리는 것."]},
+{name:"밴드 랫 풀다운", part:"back", pattern:"vertical", equip:["band"], pri:2, sets:3, reps:"12~15",
+ steps:["밴드를 높은 곳(문 위, 풀업바)에 걸고 무릎을 꿇거나 앉습니다.","가슴을 열고 팔꿈치를 몸 옆으로 끌어내립니다.","저항을 느끼며 천천히 팔을 폅니다."],
+ mistakes:["상체를 뒤로 눕히면서 당기는 것.","손목으로 당기는 것 — 팔꿈치가 주도."]},
+{name:"케이블 랫 풀다운", part:"back", pattern:"vertical", equip:["cable"], pri:3, sets:3, reps:"10~12",
+ steps:["바를 어깨너비보다 넓게 잡고 앉아 허벅지를 고정.","가슴을 살짝 들고 팔꿈치를 옆구리로 끌어내립니다.","정점에서 어깨뼈를 모은 뒤 천천히 올립니다."],
+ mistakes:["몸을 뒤로 심하게 눕히는 것 — 10~15도만.","바를 목 뒤로 내리는 것."]},
+{name:"원암 로우", part:"back", pattern:"horizontal", equip:["db","kb"], pri:3, sets:3, reps:"한쪽 10~12",
+ steps:["한 손과 한 무릎을 벤치나 의자에 대고 등을 평평하게.","팔꿈치를 뒤 위로 끌어 덤벨을 골반 옆으로 당깁니다.","어깨뼈를 모은 뒤 천천히 내립니다."],
+ mistakes:["몸통을 회전시켜 당기는 것 — 어깨는 바닥과 평행.","팔꿈치가 옆으로 벌어지는 것 — 몸에 붙여서."]},
+{name:"밴드 시티드 로우", part:"back", pattern:"horizontal", equip:["band"], pri:2, sets:3, reps:"15",
+ steps:["앉아 다리를 뻗고 밴드를 발바닥에 걸어 잡습니다.","등을 세운 채 팔꿈치를 뒤로 끌어 배꼽 쪽으로 당깁니다.","어깨뼈를 모은 뒤 천천히 폅니다."],
+ mistakes:["상체가 뒤로 눕는 것.","어깨가 올라가는 것 — 어깨를 내리고 시작."]},
+{name:"케이블 시티드 로우", part:"back", pattern:"horizontal", equip:["cable"], pri:3, sets:3, reps:"10~12",
+ steps:["케이블을 낮게 두고 앉아 등을 곧게 세웁니다.","팔꿈치를 뒤로 끌어 핸들을 배꼽 쪽으로.","어깨뼈를 모으고 1초, 천천히 풉니다."],
+ mistakes:["허리로 반동을 주는 것.","등이 둥글게 말리는 것."]},
+{name:"인버티드 로우", part:"back", pattern:"horizontal", equip:["body","bar"], pri:1, sets:3, reps:"8~12",
+ steps:["튼튼한 테이블 아래나 낮게 설치한 바 아래에 누워 잡습니다.","몸을 판자처럼 곧게 유지하며 가슴을 바로 끌어올립니다.","천천히 내립니다. 발을 몸 쪽으로 당기면 쉬워집니다."],
+ mistakes:["엉덩이가 처지는 것 — 복부와 둔근에 힘.","턱을 내밀며 당기는 것."]},
+{name:"풀오버", part:"back", pattern:"lat", equip:["db","kb"], pri:2, sets:3, reps:"12",
+ steps:["누워 덤벨 하나를 양손으로 가슴 위에 들고 팔꿈치를 살짝 굽힙니다.","팔을 머리 뒤로 넘겨 광배근이 늘어나는 것을 느낍니다.","광배근으로 다시 가슴 위로 끌어옵니다."],
+ mistakes:["팔꿈치를 굽혀 삼두 운동이 되는 것.","허리가 뜨는 것 — 갈비뼈를 내립니다."]},
+{name:"케이블 스트레이트암 풀다운", part:"back", pattern:"lat", equip:["cable"], pri:3, sets:3, reps:"12~15",
+ steps:["높은 케이블을 팔을 편 채 잡고 상체를 살짝 숙입니다.","팔을 편 채 허벅지까지 호를 그리며 내립니다.","천천히 올립니다."],
+ mistakes:["팔꿈치를 굽히는 것.","어깨가 앞으로 말리는 것."]},
+{name:"밴드 스트레이트암 풀다운", part:"back", pattern:"lat", equip:["band"], pri:1, sets:3, reps:"15",
+ steps:["밴드를 높이 걸고 팔을 편 채 잡습니다.","팔을 편 채 허벅지까지 내립니다.","천천히 돌아옵니다."],
+ mistakes:["팔꿈치 굽힘.","허리로 당기는 것."]},
+{name:"스캐퓰러 풀업", part:"back", pattern:"scap", equip:["bar"], pri:3, sets:2, reps:"8~10",
+ steps:["바에 매달린 상태에서 팔은 편 채로.","어깨뼈만 아래로 내려 몸을 몇 센티 들어올립니다.","2초 유지 후 천천히 풉니다."],
+ mistakes:["팔꿈치를 굽히는 것 — 팔은 곧게.","너무 크게 움직이려는 것 — 5~10cm면 충분."]},
+{name:"밴드 풀어파트 (등)", part:"back", pattern:"scap", equip:["band"], pri:2, sets:2, reps:"15~20",
+ steps:["밴드를 어깨 높이에서 어깨너비로 잡습니다.","팔을 편 채 양옆으로 벌려 가슴에 닿게.","어깨뼈를 모은 뒤 천천히 돌아옵니다."],
+ mistakes:["어깨가 위로 솟는 것.","팔꿈치를 굽히는 것."]},
+{name:"프론 T 레이즈", part:"back", pattern:"scap", equip:["body"], pri:1, sets:2, reps:"12~15",
+ steps:["엎드려 팔을 T자로 벌리고 엄지를 위로.","어깨뼈를 모으며 팔을 바닥에서 들어올립니다.","2초 유지 후 천천히."],
+ mistakes:["목을 꺾어 드는 것.","반동 사용."]},
+{name:"슈퍼맨", part:"back", pattern:"extension", equip:["body"], pri:2, sets:3, reps:"12~15",
+ steps:["엎드려 팔다리를 뻗습니다.","가슴과 허벅지를 동시에 바닥에서 들어올립니다.","2초 유지 후 천천히 내립니다."],
+ mistakes:["목을 뒤로 꺾는 것 — 시선은 바닥.","반동으로 튕기는 것."]},
+{name:"웨이티드 굿모닝", part:"back", pattern:"extension", equip:["db","kb"], pri:2, sets:3, reps:"12",
+ steps:["덤벨 하나를 가슴 앞에 안고 무릎을 살짝 굽힙니다.","엉덩이를 뒤로 밀며 상체를 숙이고 등은 평평하게.","엉덩이 힘으로 세웁니다."],
+ mistakes:["등이 둥글게 말리는 것 — 가슴을 편 채.","무릎을 굽혀 스쿼트가 되는 것."]},
+{name:"밴드 굿모닝 (등)", part:"back", pattern:"extension", equip:["band"], pri:1, sets:3, reps:"15",
+ steps:["밴드를 밟고 목 뒤로 걸칩니다.","엉덩이를 뒤로 밀며 상체를 숙입니다.","엉덩이 힘으로 세웁니다."],
+ mistakes:["등 말림.","무릎 과굽힘."]},
+
+// ── 가슴 ──
+{name:"플로어 프레스", part:"chest", pattern:"press", equip:["db","kb"], pri:3, sets:3, reps:"8~12",
+ steps:["누워 무릎을 세우고 덤벨을 가슴 위에 듭니다.","팔꿈치가 바닥에 닿을 때까지 천천히 내립니다.","가슴으로 밀어 올리며 정점에서 덤벨을 살짝 모읍니다."],
+ mistakes:["팔꿈치를 바닥에 튕기는 것 — 닿기만 하고 멈춤.","팔꿈치가 90도로 완전히 벌어지는 것 — 45도 정도."]},
+{name:"밴드 체스트 프레스", part:"chest", pattern:"press", equip:["band"], pri:2, sets:3, reps:"12~15",
+ steps:["밴드를 등 뒤로 감아 양손으로 가슴 높이에서 잡습니다.","앞으로 밀며 정점에서 손을 모읍니다.","저항을 느끼며 천천히 돌아옵니다."],
+ mistakes:["어깨가 앞으로 말리는 것 — 어깨뼈를 뒤로 고정.","밴드 장력이 부족하면 더 넓게 감기."]},
+{name:"케이블 체스트 프레스", part:"chest", pattern:"press", equip:["cable"], pri:3, sets:3, reps:"10~12",
+ steps:["케이블을 가슴 높이로 두고 한 발 앞으로 서서 잡습니다.","앞으로 밀며 정점에서 손을 모읍니다.","천천히 돌아옵니다."],
+ mistakes:["허리를 앞으로 기울여 체중으로 미는 것.","어깨 말림."]},
+{name:"푸시업", part:"chest", pattern:"press", equip:["body"], pri:2, sets:3, reps:"최대 (10~20)",
+ steps:["손을 어깨너비보다 약간 넓게, 몸은 머리부터 발뒤꿈치까지 판자처럼.","팔꿈치를 45도 뒤로 굽혀 가슴이 바닥에 거의 닿게.","가슴으로 밀어 올립니다."],
+ mistakes:["허리가 처지거나 엉덩이가 솟는 것 — 복부에 힘.","팔꿈치가 옆으로 90도 벌어지는 것.","가동범위를 반만 쓰는 것."]},
+{name:"디클라인 푸시업", part:"chest", pattern:"upper", equip:["body"], pri:2, sets:3, reps:"8~12",
+ steps:["발을 의자나 침대에 올리고 푸시업 자세.","가슴 위쪽이 손 사이로 내려가도록 굽힙니다.","밀어 올립니다."],
+ mistakes:["머리가 먼저 내려가는 것 — 가슴이 내려가야.","허리 처짐."]},
+{name:"덤벨 인클라인 프레스 (베개)", part:"chest", pattern:"upper", equip:["db"], pri:3, sets:3, reps:"10~12",
+ steps:["베개나 쿠션으로 상체를 30도 정도 기울여 눕습니다.","덤벨을 가슴 위쪽 위로 밀어 올립니다.","천천히 내려 팔꿈치가 몸통 높이까지."],
+ mistakes:["각도가 45도를 넘어 어깨 운동이 되는 것.","허리를 꺾는 것."]},
+{name:"밴드 인클라인 프레스", part:"chest", pattern:"upper", equip:["band"], pri:1, sets:3, reps:"12~15",
+ steps:["밴드를 등 뒤로 감고 한 발 앞으로 무릎을 꿇습니다.","위 앞쪽 대각선으로 밀어 올립니다.","천천히 돌아옵니다."],
+ mistakes:["어깨 말림.","장력 부족."]},
+{name:"케이블 인클라인 프레스", part:"chest", pattern:"upper", equip:["cable"], pri:2, sets:3, reps:"10~12",
+ steps:["케이블을 낮게 두고 위 앞쪽으로 밀어 올립니다.","정점에서 손을 모읍니다.","천천히 돌아옵니다."],
+ mistakes:["허리 꺾기.","어깨 말림."]},
+{name:"덤벨 플로어 플라이", part:"chest", pattern:"fly", equip:["db"], pri:3, sets:3, reps:"12~15",
+ steps:["누워 덤벨을 가슴 위에 들고 팔꿈치를 살짝 굽힙니다.","팔을 양옆으로 넓게 벌려 가슴이 늘어나는 것을 느낍니다.","가슴으로 껴안듯 다시 모읍니다."],
+ mistakes:["팔꿈치를 굽혀 프레스가 되는 것 — 팔꿈치 각도 고정.","너무 무거운 무게 — 플라이는 가볍게."]},
+{name:"케이블 크로스오버", part:"chest", pattern:"fly", equip:["cable"], pri:3, sets:3, reps:"12~15",
+ steps:["케이블을 높게 두고 양손으로 잡고 한 발 앞으로.","팔꿈치를 살짝 굽힌 채 아래 앞으로 호를 그려 모읍니다.","정점에서 1초, 천천히 풉니다."],
+ mistakes:["팔꿈치를 굽혀 당기는 것.","상체를 앞으로 숙여 체중으로 하는 것."]},
+{name:"밴드 플라이", part:"chest", pattern:"fly", equip:["band"], pri:2, sets:3, reps:"15",
+ steps:["밴드를 등 뒤 기둥이나 문에 걸고 양손으로 잡습니다.","팔꿈치를 살짝 굽힌 채 호를 그려 앞으로 모읍니다.","천천히 풉니다."],
+ mistakes:["어깨 말림.","팔꿈치 굽힘."]},
+{name:"덤벨 스퀴즈 프레스", part:"chest", pattern:"inner", equip:["db"], pri:3, sets:3, reps:"10~12",
+ steps:["누워 덤벨 두 개를 서로 붙인 채 가슴 위에 듭니다.","덤벨을 서로 강하게 누르며 밀어 올립니다.","누르는 힘을 유지하며 천천히 내립니다."],
+ mistakes:["덤벨이 벌어지는 것 — 계속 조여야 합니다.","허리 꺾기."]},
+{name:"다이아몬드 푸시업", part:"chest", pattern:"inner", equip:["body"], pri:2, sets:3, reps:"8~12",
+ steps:["양손을 가슴 아래에서 엄지와 검지로 다이아몬드 모양을 만듭니다.","팔꿈치를 몸에 붙인 채 내려갑니다.","밀어 올립니다."],
+ mistakes:["팔꿈치가 옆으로 벌어지는 것.","손목이 아프면 손 간격을 약간 넓혀도 됩니다."]},
+{name:"케이블 로우 투 하이 플라이", part:"chest", pattern:"inner", equip:["cable"], pri:2, sets:3, reps:"12~15",
+ steps:["케이블을 가장 낮게 두고 양손으로 잡습니다.","아래에서 위 앞으로 호를 그려 눈높이에서 모읍니다.","천천히 풉니다."],
+ mistakes:["어깨로 들어올리는 것 — 가슴 아래에서 위로 쥐어짠다는 느낌.","반동."]},
+{name:"밴드 스퀴즈 프레스", part:"chest", pattern:"inner", equip:["band"], pri:1, sets:3, reps:"15",
+ steps:["밴드를 등 뒤로 감고 양손을 가슴 앞에서 모아 잡습니다.","손을 모은 채 앞으로 밀어냅니다.","천천히 돌아옵니다."],
+ mistakes:["어깨 말림.","장력 부족."]},
+{name:"케틀벨 크러시 프레스", part:"chest", pattern:"inner", equip:["kb"], pri:2, sets:3, reps:"10~12",
+ steps:["누워 케틀벨 몸통을 양손 손바닥으로 감싸 가슴 위에 듭니다.","양손으로 강하게 조이며 밀어 올립니다.","천천히 내립니다."],
+ mistakes:["손이 미끄러질 정도로 무게가 무거운 것.","허리 꺾기."]},
+{name:"슬로우 푸시업 (5초)", part:"chest", pattern:"stability", equip:["body"], pri:2, sets:2, reps:"6~8",
+ steps:["푸시업 자세에서 5초 동안 천천히 내려갑니다.","바닥 직전에서 2초 멈춥니다.","2초에 걸쳐 밀어 올립니다."],
+ mistakes:["중간에 속도가 빨라지는 것.","허리 처짐."]},
+{name:"덤벨 얼터네이트 프레스", part:"chest", pattern:"stability", equip:["db"], pri:2, sets:2, reps:"한쪽 8~10",
+ steps:["누워 덤벨 두 개를 가슴 위에 듭니다.","한쪽만 내리고 올립니다. 반대쪽은 위에서 고정.","교대로 반복합니다."],
+ mistakes:["고정하는 쪽 팔이 흔들리는 것 — 코어를 단단히.","몸통이 옆으로 기울어지는 것."]},
+{name:"케틀벨 싱글암 플로어 프레스", part:"chest", pattern:"stability", equip:["kb"], pri:2, sets:2, reps:"한쪽 8~10",
+ steps:["누워 한 손에 케틀벨을 들고 반대 손은 바닥에.","천천히 내리고 밀어 올립니다.","반대쪽도."],
+ mistakes:["몸통이 기울어지는 것 — 배에 힘.","손목 꺾임."]},
+{name:"밴드 싱글암 프레스", part:"chest", pattern:"stability", equip:["band"], pri:1, sets:2, reps:"한쪽 12",
+ steps:["밴드를 뒤에 걸고 한 손으로 잡아 가슴 높이에서 시작합니다.","몸통을 고정한 채 한 손만 앞으로 밀어냅니다.","천천히 돌아오고 반대쪽."],
+ mistakes:["몸통이 회전하는 것.","어깨 말림."]},
+{name:"케이블 싱글암 프레스", part:"chest", pattern:"stability", equip:["cable"], pri:1, sets:2, reps:"한쪽 12",
+ steps:["케이블을 가슴 높이로 두고 한 손으로 잡습니다.","몸통을 고정한 채 앞으로 밀어냅니다.","천천히 돌아오고 반대쪽."],
+ mistakes:["몸통 회전.","어깨 말림."]},
+
+// ── 하체 ──
+{name:"고블릿 스쿼트", part:"legs", pattern:"squat", equip:["db","kb"], pri:3, sets:3, reps:"10~12",
+ steps:["덤벨이나 케틀벨을 가슴 앞에 세워 안습니다.","발은 어깨너비, 발끝은 살짝 바깥. 무릎을 발끝 방향으로 벌리며 앉습니다.","허벅지가 바닥과 평행 아래까지 내려간 뒤 발 전체로 밀어 올립니다."],
+ mistakes:["무릎이 안으로 모이는 것 — 무릎을 발끝 방향으로 밀어냅니다.","발뒤꿈치가 뜨는 것 — 체중을 발 중앙에.","상체가 앞으로 쏠리는 것 — 가슴을 열고 팔꿈치를 무릎 안쪽으로."]},
+{name:"밴드 스쿼트", part:"legs", pattern:"squat", equip:["band"], pri:2, sets:3, reps:"15",
+ steps:["밴드를 밟고 어깨에 걸치거나 무릎 위에 감습니다.","무릎을 바깥으로 밀며 앉습니다.","발 전체로 밀어 올립니다."],
+ mistakes:["무릎이 안으로 모임.","등이 둥글게 말림."]},
+{name:"맨몸 스쿼트 (템포)", part:"legs", pattern:"squat", equip:["body"], pri:1, sets:3, reps:"15~20",
+ steps:["팔을 앞으로 뻗고 3초에 걸쳐 앉습니다.","바닥에서 1초 멈춥니다.","1초에 밀어 올립니다."],
+ mistakes:["빨리 반동으로 하는 것 — 템포가 강도입니다.","무릎 안쪽 모임."]},
+{name:"점프 스쿼트", part:"legs", pattern:"squat", equip:["body"], pri:1, sets:3, reps:"10~12",
+ steps:["스쿼트 자세로 앉습니다.","폭발적으로 뛰어오릅니다.","무릎을 살짝 굽혀 부드럽게 착지하고 바로 다음 회."],
+ mistakes:["착지 때 무릎을 펴서 쿵 하는 것 — 소리 나지 않게.","층간소음이 걱정되면 템포 스쿼트로 대체."]},
+{name:"루마니안 데드리프트", part:"legs", pattern:"hinge", equip:["db","kb"], pri:3, sets:3, reps:"10~12",
+ steps:["덤벨을 허벅지 앞에 들고 무릎을 살짝 굽힙니다.","엉덩이를 뒤로 밀며 덤벨을 허벅지를 따라 내립니다. 등은 평평하게.","햄스트링이 팽팽해지면 엉덩이 힘으로 세웁니다."],
+ mistakes:["등이 둥글게 말리는 것 — 시선은 앞 아래, 가슴은 편 채.","무릎을 굽혀 스쿼트가 되는 것 — 무릎 각도는 고정.","덤벨이 몸에서 멀어지는 것 — 허벅지를 스치며."]},
+{name:"케틀벨 스윙", part:"legs", pattern:"hinge", equip:["kb"], pri:3, sets:4, reps:"15",
+ steps:["케틀벨을 앞에 두고 엉덩이를 뒤로 밀어 잡습니다.","다리 사이로 뒤로 보낸 뒤 엉덩이를 앞으로 강하게 튕겨 가슴 높이까지 올립니다.","팔은 힘을 빼고 엉덩이가 힘을 냅니다. 내려오며 다시 다리 사이로."],
+ mistakes:["팔로 들어올리는 것 — 팔은 로프처럼.","스쿼트처럼 무릎을 많이 굽히는 것 — 힙힌지.","허리로 젖혀 올리는 것 — 정점에서 둔근을 조이고 몸은 일직선."]},
+{name:"밴드 굿모닝", part:"legs", pattern:"hinge", equip:["band"], pri:2, sets:3, reps:"15",
+ steps:["밴드를 밟고 목 뒤로 걸칩니다.","엉덩이를 뒤로 밀며 상체를 숙입니다.","엉덩이 힘으로 세웁니다."],
+ mistakes:["등 말림.","무릎 과굽힘."]},
+{name:"케이블 풀스루", part:"legs", pattern:"hinge", equip:["cable"], pri:3, sets:3, reps:"12~15",
+ steps:["케이블을 가장 낮게 두고 등을 돌려 다리 사이로 로프를 잡습니다.","엉덩이를 뒤로 밀며 상체를 숙입니다.","둔근을 조이며 세우고 정점에서 1초."],
+ mistakes:["팔로 당기는 것 — 팔은 힘 빼고 엉덩이로.","허리를 뒤로 젖히는 것."]},
+{name:"싱글레그 RDL (맨몸)", part:"legs", pattern:"hinge", equip:["body"], pri:1, sets:3, reps:"한쪽 10",
+ steps:["한 발로 서서 무릎을 살짝 굽힙니다.","엉덩이를 뒤로 밀며 상체를 숙이고 반대 다리는 뒤로 뻗습니다.","엉덩이 힘으로 세웁니다."],
+ mistakes:["골반이 열리는 것 — 골반은 바닥과 평행.","등 말림."]},
+{name:"불가리안 스플릿 스쿼트", part:"legs", pattern:"unilateral", equip:["body","db","kb"], pri:3, sets:3, reps:"한쪽 8~12",
+ steps:["뒷발을 의자나 침대에 올리고 앞발은 한 걸음 앞에.","상체를 세운 채 앞 무릎을 굽혀 내려갑니다.","앞발로 밀어 올립니다. 덤벨을 들면 강도가 올라갑니다."],
+ mistakes:["앞 무릎이 안으로 꺾이는 것.","상체가 앞으로 쏠리는 것 — 앞발에 체중, 상체는 세우기.","뒷다리로 미는 것 — 뒷발은 균형용."]},
+{name:"워킹 런지", part:"legs", pattern:"unilateral", equip:["db","kb"], pri:2, sets:3, reps:"한쪽 10",
+ steps:["덤벨을 양손에 들고 한 발을 크게 앞으로.","뒷무릎이 바닥 직전까지 내려갑니다.","앞발로 밀어 다음 걸음."],
+ mistakes:["보폭이 짧아 무릎이 발끝을 많이 넘는 것.","상체 앞쏠림."]},
+{name:"리버스 런지", part:"legs", pattern:"unilateral", equip:["body"], pri:1, sets:3, reps:"한쪽 12",
+ steps:["한 발을 뒤로 크게 내딛습니다.","뒷무릎을 바닥 직전까지 내립니다.","앞발로 밀어 돌아옵니다."],
+ mistakes:["앞 무릎 안쪽 모임.","상체 앞쏠림."]},
+{name:"밴드 사이드 스텝", part:"legs", pattern:"unilateral", equip:["band"], pri:1, sets:3, reps:"한쪽 12걸음",
+ steps:["밴드를 무릎 위나 발목에 감고 살짝 앉습니다.","옆으로 한 걸음, 반대 발을 따라오되 밴드 장력은 유지.","반대쪽도."],
+ mistakes:["발이 완전히 모여 장력이 풀리는 것.","상체가 흔들리는 것."]},
+{name:"힙 쓰러스트", part:"legs", pattern:"glute", equip:["body","db","kb"], pri:3, sets:3, reps:"12~15",
+ steps:["등 위쪽을 소파나 침대에 대고 앉아 무릎을 세웁니다.","둔근을 조이며 엉덩이를 들어 몸통이 바닥과 평행하게.","정점에서 2초 조이고 천천히 내립니다. 덤벨을 골반에 올리면 강도 증가."],
+ mistakes:["허리를 꺾어 올리는 것 — 갈비뼈를 내리고 턱을 살짝 당깁니다.","무릎이 벌어지거나 모이는 것."]},
+{name:"밴드 힙 어브덕션", part:"legs", pattern:"glute", equip:["band"], pri:2, sets:3, reps:"15~20",
+ steps:["밴드를 무릎 위에 감고 옆으로 눕거나 앉습니다.","둔근으로 무릎을 벌립니다.","천천히 모읍니다."],
+ mistakes:["골반이 뒤로 넘어가는 것.","반동."]},
+{name:"케이블 킥백", part:"legs", pattern:"glute", equip:["cable"], pri:3, sets:3, reps:"한쪽 12~15",
+ steps:["발목에 스트랩을 걸고 케이블을 낮게 둡니다.","상체를 살짝 숙이고 다리를 뒤로 뻗어 둔근을 조입니다.","천천히 돌아옵니다."],
+ mistakes:["허리를 젖혀 다리를 올리는 것 — 둔근으로만.","너무 높이 차는 것."]},
+{name:"글루트 브릿지", part:"legs", pattern:"glute", equip:["body"], pri:1, sets:3, reps:"15~20",
+ steps:["누워 무릎을 세우고 발은 엉덩이 가까이.","둔근을 조이며 엉덩이를 들어올립니다.","정점에서 2초, 천천히 내립니다."],
+ mistakes:["허리 꺾기.","발뒤꿈치가 뜨는 것."]},
+{name:"카프 레이즈", part:"legs", pattern:"calf", equip:["body","db","kb"], pri:2, sets:3, reps:"15~20",
+ steps:["계단이나 책 위에 발 앞쪽만 올리고 섭니다.","뒤꿈치를 최대한 들어올려 1초 멈춥니다.","뒤꿈치가 발판 아래로 내려가도록 천천히."],
+ mistakes:["가동범위를 반만 쓰는 것 — 끝까지 내리고 끝까지 올림.","반동."]},
+{name:"싱글레그 카프 레이즈", part:"legs", pattern:"calf", equip:["body"], pri:1, sets:3, reps:"한쪽 12~15",
+ steps:["한 발로 발판에 서서 벽을 짚습니다.","뒤꿈치를 최대한 들어올립니다.","천천히 내립니다."],
+ mistakes:["균형을 잃어 반동.","가동범위 부족."]},,
+// ── 헬스장 전용 (gym:true) ──
+{name:"덤벨 벤치 프레스", part:"chest", pattern:"press", equip:["db"], gym:true, pri:4, sets:3, reps:"8~12",
+ steps:["벤치에 누워 덤벨을 가슴 위에 듭니다. 어깨뼈는 뒤로 모아 벤치에 고정.","팔꿈치가 몸통 높이 약간 아래까지 천천히 내립니다.","가슴으로 밀어 올리며 정점에서 덤벨을 살짝 모읍니다."],
+ mistakes:["어깨가 앞으로 말리는 것 — 어깨뼈를 모은 채 유지.","허리를 과하게 꺾는 것 — 발로 바닥을 단단히 밀되 엉덩이는 붙여둡니다."]},
+{name:"인클라인 덤벨 프레스", part:"chest", pattern:"upper", equip:["db"], gym:true, pri:4, sets:3, reps:"8~12",
+ steps:["벤치를 30~45도로 세우고 덤벨을 가슴 위쪽 위에 듭니다.","팔꿈치가 몸통 높이까지 천천히 내립니다.","위 안쪽으로 밀어 올립니다."],
+ mistakes:["각도가 60도를 넘어 어깨 운동이 되는 것.","팔꿈치가 90도로 완전히 벌어지는 것."]},
+{name:"덤벨 플라이 (벤치)", part:"chest", pattern:"fly", equip:["db"], gym:true, pri:4, sets:3, reps:"12~15",
+ steps:["벤치에 누워 덤벨을 가슴 위에 들고 팔꿈치를 살짝 굽힙니다.","팔을 넓게 벌려 가슴이 늘어나는 지점까지.","가슴으로 껴안듯 모읍니다."],
+ mistakes:["너무 아래까지 내려 어깨에 무리가 가는 것 — 몸통 높이까지만.","무게 욕심 — 플라이는 가볍게."]},
+{name:"시티드 덤벨 숄더 프레스", part:"shoulder", pattern:"press", equip:["db"], gym:true, pri:4, sets:3, reps:"8~12",
+ steps:["벤치를 세워 앉아 덤벨을 귀 옆에 듭니다.","머리 위로 밀어 올리되 팔꿈치를 완전히 잠그지 않습니다.","천천히 내립니다."],
+ mistakes:["허리를 벤치에서 떼고 꺾는 것.","팔꿈치가 옆으로 완전히 벌어지는 것."]},
+{name:"체스트 서포티드 덤벨 로우", part:"back", pattern:"horizontal", equip:["db"], gym:true, pri:4, sets:3, reps:"10~12",
+ steps:["인클라인 벤치에 가슴을 대고 엎드려 덤벨을 늘어뜨립니다.","팔꿈치를 뒤 위로 끌어 어깨뼈를 모읍니다.","천천히 내립니다."],
+ mistakes:["어깨가 올라가는 것 — 어깨를 내리고 당김.","팔로만 당기는 것 — 팔꿈치가 주도."]},
+{name:"스미스 벤치 프레스", part:"chest", pattern:"press", equip:["smith"], pri:4, sets:3, reps:"8~12",
+ steps:["바가 가슴 중앙 위에 오게 벤치를 맞추고 어깨너비보다 약간 넓게 잡습니다.","바를 가슴에 가볍게 닿을 때까지 천천히 내립니다.","가슴으로 밀어 올립니다."],
+ mistakes:["바가 목 쪽으로 내려오는 것 — 명치 위.","팔꿈치가 90도로 벌어지는 것 — 45~60도."]},
+{name:"스미스 인클라인 프레스", part:"chest", pattern:"upper", equip:["smith"], pri:3, sets:3, reps:"8~12",
+ steps:["벤치를 30~45도로 세우고 바가 쇄골 위에 오게.","쇄골 아래까지 천천히 내립니다.","밀어 올립니다."],
+ mistakes:["바가 얼굴 쪽으로 오는 것.","허리 꺾기."]},
+{name:"스미스 숄더 프레스", part:"shoulder", pattern:"press", equip:["smith"], pri:4, sets:3, reps:"8~12",
+ steps:["벤치를 세워 앉아 바가 얼굴 앞에 오게 합니다.","턱 높이까지 내리고 밀어 올립니다.","천천히 내립니다."],
+ mistakes:["바를 목 뒤로 내리는 것 — 얼굴 앞.","허리 꺾기."]},
+{name:"스미스 벤트오버 로우", part:"back", pattern:"horizontal", equip:["smith"], pri:3, sets:3, reps:"10~12",
+ steps:["바를 무릎 높이에 두고 엉덩이를 뒤로 밀어 상체를 45도 숙입니다.","팔꿈치를 뒤로 끌어 바를 배꼽 쪽으로 당깁니다.","천천히 내립니다."],
+ mistakes:["등이 둥글게 말리는 것.","반동으로 상체를 세우며 당기는 것."]},
+{name:"스미스 스쿼트", part:"legs", pattern:"squat", equip:["smith"], pri:4, sets:3, reps:"8~12",
+ steps:["바를 승모근 위에 얹고 발을 바보다 살짝 앞에 둡니다.","무릎을 발끝 방향으로 벌리며 허벅지가 평행 아래까지 앉습니다.","발 전체로 밀어 올립니다."],
+ mistakes:["발이 바 바로 아래에 있어 무릎이 앞으로 쏠리는 것 — 반 발 앞.","무릎 안쪽 모임."]},
+{name:"스미스 루마니안 데드리프트", part:"legs", pattern:"hinge", equip:["smith"], pri:3, sets:3, reps:"10~12",
+ steps:["바를 허벅지 앞에 잡고 무릎을 살짝 굽힙니다.","엉덩이를 뒤로 밀며 바를 무릎 아래까지 내립니다. 등은 평평하게.","엉덩이 힘으로 세웁니다."],
+ mistakes:["등 말림.","무릎을 굽혀 스쿼트가 되는 것."]},
+{name:"스미스 스플릿 스쿼트", part:"legs", pattern:"unilateral", equip:["smith"], pri:3, sets:3, reps:"한쪽 8~10",
+ steps:["바를 얹고 한 발을 앞, 한 발을 뒤에 둡니다.","뒷무릎을 바닥 직전까지 내립니다.","앞발로 밀어 올립니다."],
+ mistakes:["앞 무릎 안쪽 모임.","보폭이 짧은 것."]},
+{name:"스미스 힙 쓰러스트", part:"legs", pattern:"glute", equip:["smith"], pri:4, sets:3, reps:"10~12",
+ steps:["등 위쪽을 벤치에 대고 바를 골반에 얹습니다.","둔근을 조이며 엉덩이를 들어 몸통이 평행하게.","정점에서 2초, 천천히 내립니다."],
+ mistakes:["허리 꺾기 — 턱을 당기고 갈비뼈를 내림.","가동범위 부족."]},
+{name:"스미스 카프 레이즈", part:"legs", pattern:"calf", equip:["smith"], pri:3, sets:3, reps:"15~20",
+ steps:["바를 얹고 발 앞쪽을 발판에 올립니다.","뒤꿈치를 최대한 들어 1초.","발판 아래까지 천천히 내립니다."],
+ mistakes:["가동범위 반만 쓰기.","반동."]},
+{name:"레그 프레스", part:"legs", pattern:"squat", equip:["legpress"], pri:4, sets:3, reps:"10~12",
+ steps:["발을 어깨너비로 발판 중앙에 두고 등과 엉덩이를 시트에 붙입니다.","무릎이 90도 조금 넘게 천천히 내립니다.","발 전체로 밀되 무릎을 완전히 잠그지 않습니다."],
+ mistakes:["엉덩이가 시트에서 뜨는 것 — 그 전에 멈춤.","무릎을 끝까지 펴서 잠그는 것."]},
+{name:"싱글레그 프레스", part:"legs", pattern:"unilateral", equip:["legpress"], pri:3, sets:3, reps:"한쪽 10~12",
+ steps:["한 발만 발판 중앙에 둡니다.","천천히 내리고 밀어 올립니다.","반대쪽도."],
+ mistakes:["골반이 틀어지는 것.","무릎 잠금."]},
+{name:"레그프레스 카프 레이즈", part:"legs", pattern:"calf", equip:["legpress"], pri:3, sets:3, reps:"15~20",
+ steps:["발 앞쪽만 발판 아래쪽에 걸칩니다.","발끝으로 밀어 발판을 밀어냅니다.","천천히 돌아옵니다."],
+ mistakes:["가동범위 부족.","안전바를 안 걸고 하는 것."]},
+{name:"케이블 로우 로우", part:"back", pattern:"horizontal", equip:["cable"], pri:3, sets:3, reps:"10~15",
+ steps:["케이블을 가장 낮게 두고 한 걸음 뒤로 서서 상체를 살짝 숙입니다.","팔꿈치를 뒤로 끌어 핸들을 골반 쪽으로 당깁니다.","어깨뼈를 모으고 천천히 풉니다."],
+ mistakes:["허리로 당기는 것.","어깨가 올라가는 것."]},
+// ── 코어 (모든 부위 공용 필러) ──
+{name:"행잉 레그 레이즈", part:"any", pattern:"core", equip:["bar"], pri:2, sets:3, reps:"10~15",
+ steps:["바에 매달려 어깨뼈를 살짝 내립니다.","무릎을 굽힌 채(쉬움) 또는 다리를 편 채 골반을 말아 올립니다.","천천히 내립니다. 흔들리지 않게."],
+ mistakes:["몸이 앞뒤로 흔들리는 것 — 내릴 때 멈추고 시작.","다리만 들고 골반이 안 말리는 것 — 골반을 위로 말아야 복근."]},
+{name:"케이블 크런치", part:"any", pattern:"core", equip:["cable"], pri:2, sets:3, reps:"12~15",
+ steps:["로프를 잡고 무릎을 꿇고 손은 머리 옆에 고정.","팔은 고정하고 갈비뼈를 골반 쪽으로 말아 내립니다.","천천히 폅니다."],
+ mistakes:["팔로 당기는 것 — 팔 각도 고정.","엉덩이를 뒤로 빼며 앉는 것."]},
+{name:"플랭크", part:"any", pattern:"core", equip:["body"], pri:1, sets:3, reps:"30~45초",
+ steps:["팔꿈치를 어깨 아래에 두고 엎드립니다.","엉덩이를 조이고 갈비뼈를 내려 몸을 일직선으로.","숨을 쉬면서 버팁니다."],
+ mistakes:["허리가 처지는 것.","엉덩이가 솟는 것."]},
+{name:"데드버그", part:"any", pattern:"core", equip:["body"], pri:1, sets:3, reps:"한쪽 10",
+ steps:["누워 팔을 위로, 무릎을 90도로 듭니다.","허리를 바닥에 붙인 채 반대 팔과 다리를 천천히 뻗습니다.","돌아오고 반대쪽."],
+ mistakes:["허리가 바닥에서 뜨는 것 — 그 전까지만 뻗기.","빠르게 하는 것."]},,
+{name:"케이블 리어델트 플라이", part:"shoulder", pattern:"rear", equip:["cable"], pri:3, sets:3, reps:"12~15",
+ steps:["양쪽 케이블을 어깨 높이로 두고 팔을 교차해 반대쪽 핸들을 잡습니다.","팔꿈치를 살짝 굽힌 채 양팔을 옆 뒤로 벌립니다.","천천히 돌아옵니다."],
+ mistakes:["승모근으로 들어올리는 것 — 가볍게, 어깨는 내리고.","팔꿈치를 굽혀 로우가 되는 것."]},
+{name:"케이블 프론트 레이즈", part:"shoulder", pattern:"front", equip:["cable"], pri:3, sets:2, reps:"12~15",
+ steps:["케이블을 가장 낮게 두고 등을 돌려 몸 뒤에서 핸들을 잡습니다.","팔을 앞으로 눈높이까지 올립니다.","천천히 내립니다."],
+ mistakes:["몸을 뒤로 기울이는 것.","눈높이 이상 올리는 것."]},
+{name:"케이블 업라이트 로우", part:"shoulder", pattern:"lateral", equip:["cable"], pri:2, sets:3, reps:"12",
+ steps:["낮은 케이블에 바를 걸고 어깨너비로 잡습니다.","팔꿈치를 옆 위로 끌어 바를 가슴 아래까지 올립니다.","천천히 내립니다."],
+ mistakes:["너무 높이 올려 어깨가 찝히는 것 — 명치까지만.","손목으로 들어올리는 것 — 팔꿈치가 주도."]},
+{name:"케이블 루마니안 데드리프트", part:"legs", pattern:"hinge", equip:["cable"], pri:3, sets:3, reps:"12",
+ steps:["낮은 케이블에 바를 걸고 잡은 뒤 한 걸음 물러섭니다.","엉덩이를 뒤로 밀며 상체를 숙입니다. 등은 평평하게.","엉덩이 힘으로 세웁니다."],
+ mistakes:["등 말림.","무릎을 굽혀 스쿼트가 되는 것."]},
+{name:"케이블 힙 어브덕션", part:"legs", pattern:"glute", equip:["cable"], pri:2, sets:3, reps:"한쪽 12~15",
+ steps:["발목에 스트랩을 걸고 기둥을 옆에 두고 섭니다.","다리를 옆으로 벌려 둔근 옆을 조입니다.","천천히 돌아옵니다."],
+ mistakes:["몸을 반대로 기울이는 것.","반동."]},
+];
+
+// ── Exercise demo animations: a 2D jointed figure, side or front view ──
+// Angle conventions (side view, figure faces +x/right):
+//  t  torso from vertical, + leans forward.        th thigh from straight-down, + knee forward
+//  sh shin from straight-down (absolute)           ft foot from horizontal, + toes up
+//  ua upper arm from straight-down, + forward, 180 = overhead, negative = behind
+//  fa forearm absolute, same convention
+// Front view: ab arm abduction (0 down, 90 = T, 180 overhead), el elbow bend (0 straight), la leg abduction, kn knee bend
+const RIG = { torso:48, neck:7, head:9, ua:26, fa:24, th:40, sh:38, foot:14, shoulderW:15, hipW:9 };
+const G = 185;                      // ground y
+const R = d => d*Math.PI/180;
+
+function sidePoints(p){
+  const L = RIG;
+  const vec = (len,a)=>[len*Math.sin(R(a)), len*Math.cos(R(a))];      // from straight-down
+  let hip;
+  if(p.hip) hip = p.hip.slice();
+  else { const ank = p.ankle||[100,G]; const t1=vec(L.th,p.th), s1=vec(L.sh,p.sh); hip=[ank[0]-t1[0]-s1[0], ank[1]-t1[1]-s1[1]]; }
+  const add=(a,b)=>[a[0]+b[0],a[1]+b[1]];
+  const leg=(th,sh,ft)=>{ const k=add(hip,vec(L.th,th)); const a=add(k,vec(L.sh,sh)); const f=add(a,[L.foot*Math.cos(R(ft||0)), -L.foot*Math.sin(R(ft||0))]); return {k,a,f}; };
+  const sh = add(hip,[L.torso*Math.sin(R(p.t)), -L.torso*Math.cos(R(p.t))]);
+  const nk = add(sh,[L.neck*Math.sin(R(p.t)), -L.neck*Math.cos(R(p.t))]);
+  const hd = add(nk,[L.head*Math.sin(R(p.t)), -L.head*Math.cos(R(p.t))]);
+  const arm=(ua,fa)=>{ const e=add(sh,vec(L.ua,ua)); const h=add(e,vec(L.fa,fa)); return {e,h}; };
+  const legs=[leg(p.th,p.sh,p.ft)]; if(p.th2!=null) legs.push(leg(p.th2,p.sh2??p.sh,p.ft2??p.ft));
+  const arms=[arm(p.ua,p.fa)]; if(p.ua2!=null) arms.push(arm(p.ua2,p.fa2??p.fa));
+  return {hip, sh, nk, hd, legs, arms, view:"side"};
+}
+function frontPoints(p){
+  const L=RIG; const cx=110;
+  const hipY = p.hipY ?? (G - L.th - L.sh);
+  const kn = p.kn||0;                                    // knee bend shortens leg visually
+  const legLen = (L.th+L.sh)*Math.cos(R(kn/2));
+  const hipYc = p.hipY ?? (G - legLen);
+  const hip=[cx,hipYc];
+  const shY = hipYc - L.torso;
+  const arm=(side,ab,el)=>{ const s=[cx+side*L.shoulderW, shY]; const e=[s[0]+side*L.ua*Math.sin(R(ab)), s[1]+L.ua*Math.cos(R(ab))];
+    const fa = ab - el*side*0 - el;                         // elbow bend folds forearm toward midline/up
+    const h=[e[0]+side*L.fa*Math.sin(R(fa)), e[1]+L.fa*Math.cos(R(fa))]; return {s,e,h}; };
+  const leg=(side,la)=>{ const h=[cx+side*L.hipW, hipYc]; const k=[h[0]+side*(L.th*Math.sin(R(la))+kn*0.12), h[1]+L.th*Math.cos(R(la))*Math.cos(R(kn/2))]; const a=[h[0]+side*(L.th+L.sh)*Math.sin(R(la)), G]; return {h,k,a,f:[a[0]+side*5,a[1]]}; };
+  const ab=p.ab, el=p.el||0;
+  return {hip, sh:[cx,shY], nk:[cx,shY-L.neck], hd:[cx,shY-L.neck-L.head], view:"front",
+    arms:[arm(-1,p.abL??ab,p.elL??el), arm(1,p.abR??ab,p.elR??el)], legs:[leg(-1,p.la||0),leg(1,p.la||0)]};
+}
+
+// ── archetypes: keyframes + props ──
+const A = {
+  // standing lower body
+  squat:{view:"side", frames:[{t:0,th:0,sh:0,ua:35,fa:175},{t:35,th:72,sh:22,ua:45,fa:175}], prop:"hands-chest"},
+  hinge:{view:"side", frames:[{t:0,th:-8,sh:0,ua:0,fa:0},{t:80,th:-25,sh:-5,ua:0,fa:0}], prop:"hands"},
+  slrdl:{view:"side", frames:[{t:0,th:0,sh:0,th2:0,sh2:0,ua:0,fa:0},{t:80,th:-15,sh:0,th2:-95,sh2:-95,ft2:-90,ua:0,fa:0}], prop:"hands"},
+  swing:{view:"side", frames:[{t:75,th:-22,sh:-5,ua:-40,fa:-40},{t:0,th:0,sh:0,ua:90,fa:90}], prop:"hands", ease:"snap"},
+  lunge:{view:"side", frames:[{t:0,th:0,sh:0,th2:0,sh2:0,ft2:0,ua:0,fa:0,ankle:[110,G]},{t:5,th:55,sh:15,th2:-40,sh2:-40,ft2:-70,ua:0,fa:0,ankle:[130,G]}], prop:"hands"},
+  bulgarian:{view:"side", frames:[{t:5,th:35,sh:0,th2:-70,sh2:-150,ft2:-60,ua:0,fa:0,ankle:[110,G]},{t:10,th:80,sh:10,th2:-60,sh2:-150,ft2:-60,ua:0,fa:0,ankle:[110,G]}], prop:"hands", extra:"bench-back"},
+  calf:{view:"side", frames:[{t:0,th:0,sh:0,ft:0,ua:0,fa:0,hip:[100,G-78]},{t:0,th:0,sh:0,ft:35,ua:0,fa:0,hip:[100,G-86]}], prop:"hands"},
+  kickback:{view:"side", frames:[{t:20,th:5,sh:0,th2:5,sh2:0,ua:60,fa:60},{t:25,th:5,sh:0,th2:-70,sh2:-70,ua:60,fa:60}], prop:"cable-ankle-back"},
+  // hip / floor
+  hipthrust:{view:"side", frames:[{t:-50,th:120,sh:0,ua:-20,fa:-20,hip:[100,168]},{t:-25,th:95,sh:0,ua:-20,fa:-20,hip:[105,140]}], extra:"bench-behind", prop:"hands-hip"},
+  bridge:{view:"side", frames:[{t:-90,th:130,sh:0,ua:-100,fa:-100,hip:[100,178]},{t:-60,th:110,sh:0,ua:-100,fa:-100,hip:[105,158]}]},
+  pushup:{view:"side", frames:[{t:90,th:-90,sh:-90,ft:80,ua:0,fa:0,hip:[95,G-54]},{t:90,th:-90,sh:-90,ft:80,ua:-50,fa:60,hip:[95,G-32]}]},
+  plank:{view:"side", frames:[{t:90,th:-90,sh:-90,ft:80,ua:0,fa:90,hip:[95,G-50]},{t:90,th:-90,sh:-90,ft:80,ua:0,fa:90,hip:[95,G-49]}]},
+  pike:{view:"side", frames:[{t:125,th:5,sh:0,ua:-5,fa:-5,ankle:[60,G]},{t:130,th:10,sh:0,ua:-45,fa:45,ankle:[60,G]}]},
+  floorpress:{view:"side", frames:[{t:-90,th:130,sh:0,ua:180,fa:180,hip:[100,178]},{t:-90,th:130,sh:0,ua:110,fa:190,hip:[100,178]}], prop:"hands"},
+  benchpress:{view:"side", frames:[{t:-90,th:120,sh:0,ua:180,fa:180,hip:[100,158]},{t:-90,th:120,sh:0,ua:110,fa:190,hip:[100,158]}], prop:"hands", extra:"bench-under"},
+  inclinepress:{view:"side", frames:[{t:-55,th:110,sh:0,ua:200,fa:200,hip:[110,165]},{t:-55,th:110,sh:0,ua:135,fa:215,hip:[110,165]}], prop:"hands", extra:"bench-incline"},
+  pullover:{view:"side", frames:[{t:-90,th:130,sh:0,ua:185,fa:185,hip:[100,178]},{t:-90,th:130,sh:0,ua:235,fa:232,hip:[100,178]}], prop:"hands"},
+  superman:{view:"side", frames:[{t:90,th:-90,sh:-90,ua:90,fa:90,hip:[100,180]},{t:70,th:-110,sh:-110,ua:70,fa:70,hip:[100,180]}]},
+  deadbug:{view:"side", frames:[{t:-90,th:130,sh:0,ua:180,fa:180,hip:[100,178]},{t:-90,th:100,sh:100,ua:245,fa:245,hip:[100,178]}]},
+  crunch:{view:"side", frames:[{t:15,th:0,sh:-90,ua:160,fa:200,hip:[100,G-40]},{t:60,th:0,sh:-90,ua:160,fa:200,hip:[100,G-40]}], prop:"cable-high"},
+  legpress:{view:"side", frames:[{t:-50,th:120,sh:40,ua:-30,fa:-30,hip:[60,150]},{t:-50,th:80,sh:70,ua:-30,fa:-30,hip:[60,150]}], extra:"plate"},
+  // standing upper, side
+  row:{view:"side", frames:[{t:55,th:-10,sh:0,ua:5,fa:5},{t:55,th:-10,sh:0,ua:-45,fa:15}], prop:"hands"},
+  seatedrow:{view:"side", frames:[{t:5,th:88,sh:80,ua:90,fa:90,hip:[80,178]},{t:0,th:88,sh:80,ua:-10,fa:60,hip:[80,178]}], prop:"cable-low"},
+  lowrow:{view:"side", frames:[{t:25,th:5,sh:0,ua:75,fa:75},{t:25,th:5,sh:0,ua:-30,fa:30}], prop:"cable-low"},
+  invertedrow:{view:"side", frames:[{t:-70,th:-75,sh:-70,ft:80,ua:180,fa:180,hip:[100,175]},{t:-70,th:-75,sh:-70,ft:80,ua:120,fa:210,hip:[100,150]}], extra:"bar-at-hands"},
+  frontraise:{view:"side", frames:[{t:0,th:0,sh:0,ua:5,fa:5},{t:0,th:0,sh:0,ua:90,fa:90}], prop:"hands"},
+  facepull:{view:"side", frames:[{t:0,th:0,sh:0,ua:85,fa:85},{t:0,th:0,sh:0,ua:60,fa:140}], prop:"cable-high"},
+  straightpull:{view:"side", frames:[{t:20,th:0,sh:0,ua:140,fa:140},{t:20,th:0,sh:0,ua:15,fa:15}], prop:"cable-high"},
+  rearfly:{view:"side", frames:[{t:65,th:-15,sh:0,ua:0,fa:0},{t:65,th:-15,sh:0,ua:-75,fa:-75}], prop:"hands"},
+  chestpress:{view:"side", frames:[{t:5,th:15,sh:0,th2:-15,sh2:-5,ua:60,fa:130},{t:5,th:15,sh:0,th2:-15,sh2:-5,ua:90,fa:90}], prop:"cable-back"},
+  hanging:{view:"side", frames:[{t:5,th:0,sh:0,ua:180,fa:180,hip:[100,120]},{t:15,th:90,sh:0,ua:180,fa:180,hip:[100,120]}], extra:"bar-at-hands"},
+  // front view
+  ohp:{view:"front", frames:[{ab:70,el:135},{ab:170,el:5}], prop:"hands"},
+  lateral:{view:"front", frames:[{ab:8,el:10},{ab:90,el:10}], prop:"hands"},
+  fly:{view:"front", frames:[{ab:95,el:15},{ab:25,el:15}], prop:"hands"},
+  pullapart:{view:"front", frames:[{ab:20,el:0},{ab:90,el:0}], extra:"band-hands"},
+  pulldown:{view:"front", frames:[{ab:150,el:0},{ab:60,el:110}], extra:"bar-hands"},
+  pullup:{view:"front", frames:[{ab:165,el:0,hipY:120},{ab:120,el:130,hipY:80}], extra:"bar-fixed"},
+  scap:{view:"front", frames:[{ab:165,el:0,hipY:120},{ab:165,el:0,hipY:112}], extra:"bar-fixed"},
+  upright:{view:"front", frames:[{ab:5,el:0},{ab:80,el:120}], prop:"hands"},
+  halo:{view:"front", frames:[{abL:150,elL:120,abR:150,elR:120},{abL:165,elL:90,abR:135,elR:140}], prop:"hands"},
+  sidestep:{view:"front", frames:[{ab:20,el:90,la:5,kn:30},{ab:20,el:90,la:22,kn:30}], extra:"band-knees"},
+  wallwalk:{view:"side", frames:[{t:125,th:5,sh:0,ua:-5,fa:-5,ankle:[60,G]},{t:160,th:20,sh:20,ua:-10,fa:-10,ankle:[46,150]}], extra:"wall"},
+};
+
+// map exercise name → archetype + prop kind
+function archetypeFor(name, eq){
+  const n = name;
+  const has = (...k)=>k.some(x=>n.includes(x));
+  let a;
+  if(has("스윙")) a="swing";
+  else if(has("불가리안")) a="bulgarian";
+  else if(has("런지","스플릿")) a="lunge";
+  else if(has("카프")) a="calf";
+  else if(has("킥백")) a="kickback";
+  else if(has("힙 쓰러스트")) a="hipthrust";
+  else if(has("브릿지")) a="bridge";
+  else if(has("사이드 스텝","어브덕션")) a="sidestep";
+  else if(has("레그 프레스","레그프레스","싱글레그 프레스")) a="legpress";
+  else if(has("싱글레그 RDL")) a="slrdl";
+  else if(has("굿모닝","데드리프트","풀스루")) a="hinge";
+  else if(has("스쿼트")) a="squat";
+  else if(has("파이크")) a="pike";
+  else if(has("월 워크")) a="wallwalk";
+  else if(has("플랭크")) a="plank";
+  else if(has("푸시업")) a="pushup";
+  else if(has("풀오버")) a="pullover";
+  else if(has("인클라인")) a="inclinepress";
+  else if(has("벤치 프레스","스미스 벤치")) a="benchpress";
+  else if(has("플로어 프레스","스퀴즈","크러시","얼터네이트","싱글암 플로어")) a="floorpress";
+  else if(has("슈퍼맨","프론")) a="superman";
+  else if(has("데드버그")) a="deadbug";
+  else if(has("크런치")) a="crunch";
+  else if(has("행잉")) a="hanging";
+  else if(has("인버티드")) a="invertedrow";
+  else if(has("시티드 로우")) a="seatedrow";
+  else if(has("로우 로우")) a="lowrow";
+  else if(has("서포티드","벤트오버 로우","원암 로우","케틀벨 로우")) a="row";
+  else if(has("페이스 풀")) a="facepull";
+  else if(has("스트레이트암")) a="straightpull";
+  else if(has("리버스 플라이","리어델트")) a="rearfly";
+  else if(has("풀어파트")) a="pullapart";
+  else if(has("랫 풀다운")) a="pulldown";
+  else if(has("스캐퓰러")) a="scap";
+  else if(has("풀업","친업")) a="pullup";
+  else if(has("업라이트")) a="upright";
+  else if(has("헤일로")) a="halo";
+  else if(has("레터럴")) a="lateral";
+  else if(has("프론트 레이즈")) a="frontraise";
+  else if(has("플라이","크로스오버","로우 투 하이")) a="fly";
+  else if(has("체스트 프레스","싱글암 프레스")) a="chestpress";
+  else if(has("프레스")) a="ohp";
+  else a="squat";
+  return a;
+}
+
+// ── drawing ──
+const NS="http://www.w3.org/2000/svg";
+function el(tag, attrs){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+function lerpPose(a,b,u){ const o={}; for(const k in a){ const av=a[k], bv=b[k]; if(Array.isArray(av)) o[k]=av.map((v,i)=>v+(bv[i]-v)*u); else if(typeof av==="number") o[k]=av+(bv-av)*u; else o[k]=av; } return o; }
+const ease = u => u<.5 ? 2*u*u : 1-Math.pow(-2*u+2,2)/2;
+
+function drawFigure(svg, pts, opts){
+  svg.innerHTML="";
+  const g = el("g",{fill:"none",stroke:"var(--ink)","stroke-width":4,"stroke-linecap":"round","stroke-linejoin":"round"});
+  svg.appendChild(g);
+  if(opts.extra==="bar-fixed"||opts.extra==="bar-at-hands"){ const hy = pts.view==="front" ? pts.arms[0].h[1] : pts.arms[0].h[1]; const BAR = opts.extra==="bar-fixed" ? 38 : (opts.barY||38); const dy = BAR - hy; g.setAttribute("transform",`translate(0 ${dy})`); }
+  const line=(a,b,attrs)=>g.appendChild(el("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],...(attrs||{})}));
+  const poly=(arr,attrs)=>g.appendChild(el("polyline",{points:arr.map(p=>p.join(",")).join(" "),...(attrs||{})}));
+  // ground (outside the translated group)
+  svg.insertBefore(el("line",{x1:10,y1:G,x2:210,y2:G,stroke:"var(--line)","stroke-width":2}), g);
+  // extras behind
+  const ex = opts.extra||"";
+  if(ex==="bench-under") g.appendChild(el("rect",{x:40,y:pts.hip[1]+6,width:120,height:8,rx:2,fill:"var(--chip)",stroke:"var(--line)","stroke-width":2}));
+  if(ex==="bench-behind") g.appendChild(el("rect",{x:40,y:pts.sh[1]+2,width:34,height:G-pts.sh[1]-2,fill:"var(--chip)",stroke:"var(--line)","stroke-width":2}));
+  if(ex==="bench-back"){ const b=pts.legs[1]; g.appendChild(el("rect",{x:20,y:b.a[1]+2,width:30,height:G-b.a[1]-2,fill:"var(--chip)",stroke:"var(--line)","stroke-width":2})); }
+  if(ex==="bench-incline") g.appendChild(el("polygon",{points:`70,${G} 70,160 128,128 138,134 86,${G}`,fill:"var(--chip)",stroke:"var(--line)","stroke-width":2}));
+  if(ex==="plate"){ const a=pts.legs[0].a; g.appendChild(el("rect",{x:a[0]+4,y:a[1]-26,width:8,height:52,rx:2,fill:"var(--chip)",stroke:"var(--line)","stroke-width":2})); }
+  if(ex==="wall") g.appendChild(el("line",{x1:44,y1:30,x2:44,y2:G,stroke:"var(--line)","stroke-width":3}));
+  // body
+  const back = pts.view==="side" && pts.legs[1]; if(back){ poly([pts.hip,back.k,back.a,back.f],{stroke:"var(--muted)"}); }
+  const backArm = pts.arms[1] && pts.view==="side" ? pts.arms[1] : null; if(backArm) poly([pts.sh,backArm.e,backArm.h],{stroke:"var(--muted)"});
+  if(pts.view==="front"){ for(const l of pts.legs) poly([l.h,l.k,l.a,l.f]); line(pts.legs[0].h,pts.legs[1].h); }
+  else { const l=pts.legs[0]; poly([pts.hip,l.k,l.a,l.f]); }
+  line(pts.hip,pts.sh); line(pts.sh,pts.nk);
+  g.appendChild(el("circle",{cx:pts.hd[0],cy:pts.hd[1],r:RIG.head,fill:"var(--surface)"}));
+  if(pts.view==="front"){ line(pts.arms[0].s,pts.arms[1].s); for(const a of pts.arms) poly([a.s,a.e,a.h]); }
+  else { const a=pts.arms[0]; poly([pts.sh,a.e,a.h]); }
+  // props
+  const hands = pts.view==="front" ? pts.arms.map(a=>a.h) : [pts.arms[0].h];
+  const prop = opts.prop||"";
+  const hl = "var(--accent)";
+  const drawWeight = h => { g.appendChild(el("rect",{x:h[0]-9,y:h[1]-3,width:18,height:6,rx:2,fill:hl,stroke:"none"})); };
+  if(prop==="hands"||prop==="hands-chest"||prop==="hands-hip") hands.forEach(drawWeight);
+  if(prop.startsWith("cable")){
+    let anchor = prop==="cable-high" ? [205,40] : prop==="cable-low" ? [205,170] : prop==="cable-back" ? [15,60] : prop==="cable-ankle-back" ? [15,170] : [205,60];
+    const target = prop==="cable-ankle-back" && pts.legs[1] ? pts.legs[1].a : hands[0];
+    g.appendChild(el("line",{x1:anchor[0],y1:anchor[1],x2:target[0],y2:target[1],stroke:hl,"stroke-width":2}));
+    g.appendChild(el("rect",{x:anchor[0]-4,y:20,width:8,height:G-20,fill:"var(--chip)",stroke:"var(--line)","stroke-width":2}));
+    g.appendChild(el("circle",{cx:anchor[0],cy:anchor[1],r:4,fill:hl}));
+  }
+  if(ex==="bar-hands"||ex==="bar-fixed"||ex==="bar-at-hands"){ const y=hands[0][1]; const xs=hands.map(h=>h[0]); const x1=Math.min(...xs)-22, x2=Math.max(...xs)+22; g.appendChild(el("line",{x1,y1:y,x2,y2:y,stroke:hl,"stroke-width":4}));
+    if(ex!=="bar-hands"){ g.appendChild(el("line",{x1:x1,y1:y,x2:x1,y2:y-120,stroke:"var(--line)","stroke-width":3})); g.appendChild(el("line",{x1:x2,y1:y,x2:x2,y2:y-120,stroke:"var(--line)","stroke-width":3})); }
+    if(ex==="bar-hands"){ g.appendChild(el("line",{x1:110,y1:y,x2:110,y2:10,stroke:hl,"stroke-width":2})); }
+  }
+  if(ex==="band-hands") g.appendChild(el("line",{x1:hands[0][0],y1:hands[0][1],x2:hands[1][0],y2:hands[1][1],stroke:hl,"stroke-width":3}));
+  if(ex==="band-knees"){ const k=pts.legs.map(l=>l.k); g.appendChild(el("line",{x1:k[0][0],y1:k[0][1],x2:k[1][0],y2:k[1][1],stroke:hl,"stroke-width":3})); }
+}
+
+function computePoints(arch, pose){ return arch.view==="front" ? frontPoints(pose) : sidePoints(pose); }
+
+// play: loops A→B→A. returns stop()
+function playDemo(svg, name){
+  const key = archetypeFor(name); const arch = A[key];
+  svg.setAttribute("viewBox","0 0 220 200");
+  const [fa,fb] = arch.frames; const dur = 1800;
+  let raf, t0=performance.now();
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function frame(now){
+    let u = ((now-t0)%dur)/dur; u = u<.5 ? u*2 : 2-u*2;      // 0→1→0
+    u = ease(u);
+    const pose = lerpPose(fa,fb,u);
+    drawFigure(svg, computePoints(arch,pose), arch);
+    if(!reduce) raf = requestAnimationFrame(frame);
+  }
+  frame(t0);
+  return ()=>cancelAnimationFrame(raf);
+}
+
+
+// ── state ──
+const KEY = "hwp:v3";
+const today = new Date().getDay();
+const todayKey = new Date().toISOString().slice(0,10);
+let state = { part:null, partDay:null, place:"home",
+  counts:{ home:{db:1,kb:0,band:0,bar:0}, gym:{cable:1,db:0,smith:0,legpress:0} },
+  people:1, time:35, seed:0 };
+try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.counts && s.counts.home) state = {...state, ...s}; }catch(e){}
+if(state.partDay !== todayKey){ state.part = BASE[today] || state.part || "shoulder"; state.partDay = todayKey; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+let overrides = {}; // key "c-i" -> exercise name
+
+// ── slots ──
+function slots(){
+  const list = [];
+  for(const q of EQUIP[state.place]){ const n = state.counts[state.place][q.id]||0; if(n>0) list.push(...q.slots(n)); }
+  return list;
+}
+function pool(part){ // exercises usable for this part in this place
+  return EX.filter(e => (e.part===part || e.part==="any") && (state.place==="gym" || !e.gym));
+}
+
+// ── solo build: one per pattern, respecting available equipment types ──
+function buildSolo(part){
+  const P = PARTS[part]; const T = TIME[state.time];
+  const have = new Set(["body", ...slots().map(s=>s.eq)]);
+  const cand = pool(part).filter(e=>e.part!=="any" && e.equip.some(q=>have.has(q)));
+  const chosen=[], names=new Set();
+  const take = e => { chosen.push({...e, useEq:e.equip.find(q=>have.has(q)), sets:T.sets}); names.add(e.name); };
+  for(const pat of P.patterns){
+    if(chosen.length>=T.ex) break;
+    const c = cand.filter(e=>e.pattern===pat).sort((a,b)=>b.pri-a.pri);
+    if(!c.length) continue;
+    const top = c.filter(e=>e.pri===c[0].pri); take(top[state.seed%top.length]);
+  }
+  for(const e of cand.sort((a,b)=>b.pri-a.pri)){ if(chosen.length>=T.ex) break; if(!names.has(e.name)) take(e); }
+  return [{label:null, items:chosen.map(e=>({slot:{eq:e.useEq,label:null}, ex:e}))}];
+}
+
+// ── group build: each cycle assigns one exercise to every slot in use ──
+function buildGroup(part){
+  const P = PARTS[part]; const T = TIME[state.time];
+  let S = slots();
+  // if more slots than people, keep the first `people` slots but prefer slots that have exercises for this part
+  const all = pool(part);
+  const useful = s => all.some(e=>e.part===part && e.equip.includes(s.eq));
+  if(S.length > state.people){
+    S = [...S].sort((a,b)=>Number(useful(b))-Number(useful(a))).slice(0, state.people);
+  }
+  // fewer slots than people → add bodyweight slots up to people
+  const bodySlots = Math.max(0, state.people - S.length);
+  for(let i=0;i<bodySlots;i++) S.push({eq:"body", label:`맨몸 ${bodySlots>1?i+1:""}`.trim()});
+
+  const used = new Set(); const patUsed = new Set(); const cycles = [];
+  const score = e => (e.part===part?100:0) + (patUsed.has(e.pattern)?0:5) + e.pri*10;
+  for(let c=0; c<T.cycles; c++){
+    const items = [];
+    for(const s of S){
+      let c1 = all.filter(e=>!used.has(e.name) && e.equip.includes(s.eq));
+      if(!c1.length) c1 = all.filter(e=>!used.has(e.name) && e.equip.includes("body")); // slot idle → bodyweight
+      if(!c1.length) continue;
+      c1.sort((a,b)=>score(b)-score(a));
+      const top = c1.filter(e=>score(e)===score(c1[0]));
+      const e = top[(state.seed + c) % top.length];
+      used.add(e.name); patUsed.add(e.pattern);
+      items.push({slot:s, ex:{...e, useEq:s.eq, sets:T.gsets}});
+    }
+    if(items.length) cycles.push({label:`${c+1}사이클`, items});
+  }
+  return cycles;
+}
+function applyOverrides(cycles){
+  return cycles.map((cy,ci)=>({...cy, items:cy.items.map((it,i)=>{ const n=overrides[`${ci}-${i}`]; const r = n && EX.find(x=>x.name===n); return r ? {...it, ex:{...it.ex, ...r, sets:it.ex.sets, useEq:it.ex.useEq}} : it; })}));
+}
+function minutes(cycles){
+  const T = TIME[state.time];
+  if(state.people>1){
+    const S = cycles[0]?.items.length||1;
+    const share = Math.ceil(state.people / S);          // people per slot, alternating
+    const perSet = Math.max(45+60, share*55);             // a slot cycles through its people
+    return 5 + Math.round(cycles.length * T.gsets * perSet / 60);
+  }
+  const n = cycles[0]?.items.length||0;
+  return 5 + Math.round(n*T.sets*(45+T.rest)/60);
+}
+
+// ── render ──
+const $ = s=>document.querySelector(s);
+function renderWeek(){
+  const w = $("#week"); w.innerHTML="";
+  for(let d=1; d<=7; d++){ const i=d%7, base=BASE[i];
+    const el=document.createElement("div"); el.className="day"+(i===today?" today":"")+(base?"":" free");
+    el.innerHTML=`${WEEK[i]}<b>${base?PARTS[base].name:"자유"}</b>`; w.appendChild(el); }
+  document.querySelectorAll(".part").forEach(b=>b.setAttribute("aria-pressed", b.dataset.part===state.part));
+}
+function renderEq(){
+  document.querySelectorAll("#place button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.p===state.place));
+  const box = $("#eq"); box.innerHTML="";
+  for(const q of EQUIP[state.place]){
+    const n = state.counts[state.place][q.id]||0;
+    const row = document.createElement("div"); row.className="eqrow"+(n?"":" off");
+    row.innerHTML = `<div class="nm">${q.name}<small>${q.hint}</small></div>
+      <div class="ctr"><button aria-label="${q.name} 줄이기" data-d="-1">−</button><output>${n}${q.unit}</output><button aria-label="${q.name} 늘리기" data-d="1">+</button></div>`;
+    row.querySelectorAll("button").forEach(b=>b.addEventListener("click", ()=>{
+      state.counts[state.place][q.id] = Math.max(0, Math.min(9, n + Number(b.dataset.d)));
+      overrides={}; save(); renderEq(); renderRoutine();
+    }));
+    row.querySelector('[data-d="-1"]').disabled = n<=0;
+    box.appendChild(row);
+  }
+}
+function renderControls(){
+  $("#pv").textContent = state.people; $("#pm").disabled = state.people<=1; $("#pp").disabled = state.people>=8;
+  document.querySelectorAll("#time button").forEach(b=>b.setAttribute("aria-pressed", Number(b.dataset.t)===state.time));
+}
+function exCard(it, idx, group){
+  const e = it.ex;
+  const li = document.createElement("li"); li.className="ex";
+  li.innerHTML = `
+    <div class="ex-head" role="button" tabindex="0" aria-expanded="false">
+      ${group ? `<div class="slot">${it.slot.label}</div>` : `<div class="num">${idx+1}</div>`}
+      <div>
+        <p class="ex-title">${e.name}</p>
+        <p class="ex-sub"><span class="tag">${EQNAME[e.useEq]}</span>${e.sets}세트 × ${e.reps}${/초|회/.test(e.reps)?"":"회"}</p>
+      </div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="ex-body">
+      <svg class="demo" aria-label="${e.name} 동작 시연" role="img"></svg>
+      <p class="demo-cap">동작 시연 · 파란색이 기구</p>
+      <h4>하는 법</h4><ol>${e.steps.map(s=>`<li>${s}</li>`).join("")}</ol>
+      <h4>흔한 실수</h4><ul>${e.mistakes.map(s=>`<li>${s}</li>`).join("")}</ul>
+      <button class="swap">이 운동만 다른 걸로 바꾸기</button>
+    </div>`;
+  const head = li.querySelector(".ex-head");
+  let stop = null;
+  const toggle = ()=>{ const o = li.classList.toggle("open"); head.setAttribute("aria-expanded", o);
+    if(o){ stop = playDemo(li.querySelector(".demo"), e.name); } else if(stop){ stop(); stop=null; } };
+  li._open = toggle;
+  head.addEventListener("click", toggle);
+  head.addEventListener("keydown", ev=>{ if(ev.key==="Enter"||ev.key===" "){ev.preventDefault(); toggle();} });
+  return li;
+}
+let current = [];
+function renderRoutine(){
+  const P = PARTS[state.part]; const T = TIME[state.time]; const group = state.people>1;
+  current = applyOverrides(group ? buildGroup(state.part) : buildSolo(state.part));
+  const n = current.reduce((a,c)=>a+c.items.length,0);
+  $("#title").textContent = `${P.name} · ${n}종목 · 약 ${minutes(current)}분`;
+  const S = current[0]?.items.length||0;
+  $("#subtitle").textContent = group
+    ? `${state.people}명 · ${state.place==="gym"?"회사 헬스장":"집"} · 자리 ${S}개 · ${current.length}사이클 × ${T.gsets}세트`
+    : `혼자 · ${state.place==="gym"?"회사 헬스장":"집"} · ${T.sets}세트씩`;
+  $("#warm").innerHTML = `<b>웜업 5분.</b> ${P.warm}`;
+  const rot = $("#rot");
+  if(group && S){
+    const share = Math.ceil(state.people/S);
+    rot.hidden=false;
+    rot.innerHTML = `<b>진행 방식.</b> 사이클마다 자리별로 운동이 정해져 있습니다. 각 자리에서 ${T.gsets}세트를 마치면 다음 사이클로 넘어갑니다.
+      ${share>1 ? `<br>${state.people}명이 ${S}자리를 쓰므로 한 자리에 ${share}명이 붙어 한 세트씩 교대로 합니다. 상대가 하는 동안이 휴식입니다.` : `<br>인원과 자리 수가 같아 각자 한 자리씩 맡고, 사이클이 바뀔 때 원하는 자리로 옮기면 됩니다.`}`;
+    $("#note").textContent = current.some(c=>c.items.some(it=>it.ex.part==="any")) ? "부위 운동이 부족한 자리(주로 중앙 바)에는 복근 운동을 넣었습니다." : "";
+  } else { rot.hidden=true; $("#note").textContent=""; }
+
+  const out = $("#out"); out.innerHTML="";
+  if(!n){ out.innerHTML = `<div class="empty">기구를 하나 이상 넣어주세요. 맨몸 운동은 자동으로 채워집니다.</div>`; return; }
+  current.forEach((cy,ci)=>{
+    const sec = document.createElement("section"); sec.className="cycle";
+    if(cy.label) sec.innerHTML = `<h3>${cy.label} <span>${T.gsets}세트 × 10~15회, 자리 ${cy.items.length}개</span></h3>`;
+    const ol = document.createElement("ol"); ol.className="routine";
+    cy.items.forEach((it,i)=>{ const li = exCard(it,i,group); li.querySelector(".swap").addEventListener("click", ()=>swapOne(ci,i)); ol.appendChild(li); });
+    sec.appendChild(ol); out.appendChild(sec);
+  });
+}
+function swapOne(ci, i){
+  const it = current[ci].items[i]; const cur = it.ex;
+  const names = new Set(current.flatMap(c=>c.items.map(x=>x.ex.name)));
+  const all = pool(state.part).filter(e=>e.equip.includes(cur.useEq) && (state.people>1 || e.pattern===cur.pattern));
+  const alts = all.filter(e=>!names.has(e.name)).sort((a,b)=>(b.part===state.part)-(a.part===state.part) || b.pri-a.pri);
+  const btn = document.querySelectorAll(".swap")[current.slice(0,ci).reduce((a,c)=>a+c.items.length,0)+i];
+  if(!alts.length){ btn.textContent="이 자리에서 할 수 있는 대체 운동이 없습니다"; btn.disabled=true; return; }
+  const idx = alts.findIndex(e=>e.name===(overrides[`${ci}-${i}`]||"")); // rotate through alts
+  overrides[`${ci}-${i}`] = alts[(idx+1)%alts.length].name;
+  renderRoutine();
+  const li = document.querySelectorAll(".ex")[current.slice(0,ci).reduce((a,c)=>a+c.items.length,0)+i];
+  if(li && li._open) li._open();
+}
+
+// ── wire ──
+document.querySelectorAll(".part").forEach(b=>b.addEventListener("click", ()=>{ state.part=b.dataset.part; state.partDay=todayKey; overrides={}; save(); renderWeek(); renderRoutine(); }));
+document.querySelectorAll("#place button").forEach(b=>b.addEventListener("click", ()=>{ state.place=b.dataset.p; overrides={}; save(); renderEq(); renderRoutine(); }));
+$("#pm").addEventListener("click", ()=>{ state.people=Math.max(1,state.people-1); overrides={}; save(); renderControls(); renderRoutine(); });
+$("#pp").addEventListener("click", ()=>{ state.people=Math.min(8,state.people+1); overrides={}; save(); renderControls(); renderRoutine(); });
+document.querySelectorAll("#time button").forEach(b=>b.addEventListener("click", ()=>{ state.time=Number(b.dataset.t); overrides={}; save(); renderControls(); renderRoutine(); }));
+$("#regen").addEventListener("click", ()=>{ state.seed=(state.seed+1)%7; overrides={}; save(); renderRoutine(); });
+
+renderWeek(); renderEq(); renderControls(); renderRoutine();
+</script>
+</body>
+</html>
