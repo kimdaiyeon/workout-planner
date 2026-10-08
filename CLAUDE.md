@@ -30,8 +30,9 @@
   - `body.html` + `body.js` — **근육 지도**. three.js(CDN importmap)로 코드 생성한 마네킹 위에 근육 26종을 타원체로 배치. 남/여는 어깨·골반·몸통 비율만 다름. 클릭 → 주동근/협력근 운동 목록, `#근육코드` 해시로 상태 유지
   - 해부학 메시 자산은 없음. 실제 메시가 필요하면 BodyParts3D(CC BY-SA, 남성만) 또는 Z-Anatomy 검토 — 사용자 결정 필요
 - `videos/` — **시연 영상 투입 폴더**(2026-10-08 복원). 다른 AI가 만드는 운동별 영상이 여기로 들어와야 한다. 그쪽이 말한 `~/workspace/workout-planner/{art,videos,site/...}`는 그 AI의 샌드박스 경로라 이 맥에 없음
-  - `scripts/ingest_videos.py` — 파일명 → 운동 매칭(`videos/map.json` 수동 지정 → `NNN-` 번호 접두 → 운동 이름 포함) 후 `data/demo_videos.json` 생성, `db.js` 재생성. 길이·해상도는 `mdls`, 미색인이면 mp4 아톰 직접 파싱
-  - 카탈로그 상세는 영상이 있으면 `<video>`, 없으면 SVG 인형으로 폴백
+  - `scripts/ingest_videos.py` — 파일명 → 운동 매칭 후 `data/demo_videos.json` 생성, `db.js` 재생성. 순서: `map.json` `files`(정확 일치) → `NNN-` 번호 접두 → `map.json` `slugs`(뷰 접미사·`-final` 제거한 기본 이름) → 운동 이름 포함. 뷰는 `-side/-back/-top`, 없으면 front. 길이·해상도는 `mdls`, 미색인이면 mp4 아톰 직접 파싱
+  - **2026-10-08 1차 배치 44개 수신**(zip 3개, 174MB). 전부 `slugs`로 연결, 운동 24개 커버, 운동당 1~2개 뷰. 다른 AI의 파일명은 `{영문 slug}[-side|-back|-top]-final.mp4`이며 다음 배치부터 `{id}-` 접두를 붙이기로 함(`data/exercise_ids.tsv` 전달)
+  - 카탈로그 상세는 영상이 있으면 `<video>`(뷰 여러 개면 정면/측면/후면/상단 전환 버튼), 없으면 SVG 인형으로 폴백
   - 권장 파일명: `{id 3자리}-{영문 슬러그}.mp4` (예: `021-cable-lat-pulldown.mp4`). id는 `data/exercises.json`
 - `index.html` — 기존 4분할 플래너 프로토타입. 그대로 둠. 구조는 `README.md`
 - `.claude/launch.json` — `static` 설정: `python3 -m http.server 8791`. 카탈로그는 `http://localhost:8791/catalog/`

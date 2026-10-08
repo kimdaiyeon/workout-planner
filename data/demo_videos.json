@@ -1,14 +1,532 @@
 [
  {
+  "file": "arnold-press-final.mp4",
+  "exercises": [
+   16
+  ],
+  "view": "front",
+  "bytes": 5837917,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "arnold-press-side-final.mp4",
+  "exercises": [
+   16
+  ],
+  "view": "side",
+  "bytes": 3419671,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "barbell-hip-thrust-final.mp4",
+  "exercises": [
+   108
+  ],
+  "view": "front",
+  "bytes": 2837575,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "barbell-hip-thrust-side-final.mp4",
+  "exercises": [
+   108
+  ],
+  "view": "side",
+  "bytes": 2629722,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "bench-press-final.mp4",
+  "exercises": [
+   103
+  ],
+  "view": "front",
+  "bytes": 5130217,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "bench-press-top-final.mp4",
+  "exercises": [
+   103
+  ],
+  "view": "top",
+  "bytes": 5317068,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "bentover-row-back-final.mp4",
+  "exercises": [
+   105
+  ],
+  "view": "back",
+  "bytes": 5129884,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "bentover-row-side-final.mp4",
+  "exercises": [
+   105
+  ],
+  "view": "side",
+  "bytes": 4926854,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "bulgarian-split-squat-final.mp4",
+  "exercises": [
+   65
+  ],
+  "view": "front",
+  "bytes": 3339661,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "bulgarian-split-squat-side-final.mp4",
+  "exercises": [
+   65
+  ],
+  "view": "side",
+  "bytes": 2982379,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "cable-seated-row-final.mp4",
+  "exercises": [
+   24
+  ],
+  "view": "front",
+  "bytes": 5380525,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "cable-seated-row-side-final.mp4",
+  "exercises": [
+   24
+  ],
+  "view": "side",
+  "bytes": 3387938,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "deadlift-side-final.mp4",
+  "exercises": [
+   107
+  ],
+  "view": "side",
+  "bytes": 3915924,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "dumbbell-bench-press-final.mp4",
+  "exercises": [
+   75
+  ],
+  "view": "front",
+  "bytes": 4965376,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "dumbbell-bench-press-top-final.mp4",
+  "exercises": [
+   75
+  ],
+  "view": "top",
+  "bytes": 5654651,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "dumbbell-fly-final.mp4",
+  "exercises": [
+   77
+  ],
+  "view": "front",
+  "bytes": 4089920,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "dumbbell-fly-top-final.mp4",
+  "exercises": [
+   77
+  ],
+  "view": "top",
+  "bytes": 4074414,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "hip-thrust-final.mp4",
+  "exercises": [
+   69
+  ],
+  "view": "front",
+  "bytes": 3450536,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "hip-thrust-side-final.mp4",
+  "exercises": [
+   69
+  ],
+  "view": "side",
+  "bytes": 3434810,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "incline-dumbbell-press-final.mp4",
+  "exercises": [
+   76
+  ],
+  "view": "front",
+  "bytes": 4432948,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "incline-dumbbell-press-side-final.mp4",
+  "exercises": [
+   76
+  ],
+  "view": "side",
+  "bytes": 3725475,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "incline-press-side-final.mp4",
+  "exercises": [
+   104
+  ],
+  "view": "side",
+  "bytes": 3576920,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "lat-pulldown-back-final.mp4",
+  "exercises": [
+   21
+  ],
+  "view": "back",
+  "bytes": 3974593,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "lat-pulldown-final.mp4",
+  "exercises": [
+   21
+  ],
+  "view": "front",
+  "bytes": 4073463,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "lateral-raise-final.mp4",
+  "exercises": [
+   5
+  ],
+  "view": "front",
+  "bytes": 3854162,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "lateral-raise-side-final.mp4",
+  "exercises": [
+   5
+  ],
+  "view": "side",
+  "bytes": 5122451,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "leg-press-final.mp4",
+  "exercises": [
+   89
+  ],
+  "view": "front",
+  "bytes": 3905149,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "leg-press-side-final.mp4",
+  "exercises": [
+   89
+  ],
+  "view": "side",
+  "bytes": 3406390,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "one-arm-row-back-final.mp4",
+  "exercises": [
+   22
+  ],
+  "view": "back",
+  "bytes": 4965091,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "one-arm-row-side-final.mp4",
+  "exercises": [
+   22
+  ],
+  "view": "side",
+  "bytes": 4873044,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "overhead-press-final.mp4",
+  "exercises": [
+   102
+  ],
+  "view": "front",
+  "bytes": 4915077,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "overhead-press-side-final.mp4",
+  "exercises": [
+   102
+  ],
+  "view": "side",
+  "bytes": 4350467,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "pushup-final.mp4",
+  "exercises": [
+   38
+  ],
+  "view": "front",
+  "bytes": 5117828,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "pushup-side-final.mp4",
+  "exercises": [
+   38
+  ],
+  "view": "side",
+  "bytes": 4325566,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "reverse-fly-back-final.mp4",
+  "exercises": [
+   8
+  ],
+  "view": "back",
+  "bytes": 5310859,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "reverse-fly-side-final.mp4",
+  "exercises": [
+   8
+  ],
+  "view": "side",
+  "bytes": 5007900,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "romanian-deadlift-back-final.mp4",
+  "exercises": [
+   60
+  ],
+  "view": "back",
+  "bytes": 4418785,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "romanian-deadlift-side-final.mp4",
+  "exercises": [
+   60
+  ],
+  "view": "side",
+  "bytes": 3679603,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
   "file": "shoulder-press-final.mp4",
   "exercises": [
    1,
    78
   ],
-  "bytes": 1535473,
-  "matched_by": "map.json",
-  "duration_sec": 6.5,
-  "width": 1040,
-  "height": 832
+  "view": "front",
+  "bytes": 3851858,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "shoulder-press-side-final.mp4",
+  "exercises": [
+   1,
+   78
+  ],
+  "view": "side",
+  "bytes": 3919212,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "squat-back-final.mp4",
+  "exercises": [
+   106
+  ],
+  "view": "back",
+  "bytes": 3294165,
+  "matched_by": "map.json slugs",
+  "duration_sec": 9.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "squat-final.mp4",
+  "exercises": [
+   106
+  ],
+  "view": "front",
+  "bytes": 3507763,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "walking-lunge-final.mp4",
+  "exercises": [
+   66
+  ],
+  "view": "front",
+  "bytes": 3402152,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
+ },
+ {
+  "file": "walking-lunge-side-final.mp4",
+  "exercises": [
+   66
+  ],
+  "view": "side",
+  "bytes": 3204709,
+  "matched_by": "map.json slugs",
+  "duration_sec": 10.0,
+  "width": 1152,
+  "height": 768
  }
 ]

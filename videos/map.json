@@ -1,6 +1,29 @@
 {
-  "_설명": "파일명으로 자동 매칭이 안 되는 영상을 운동 id(data/exercises.json)에 수동 연결한다. 자동 매칭: 파일명이 '숫자-' 로 시작하면 그 번호, 아니면 운동 이름이 파일명에 포함되는지로 찾는다.",
-  "shoulder-press-final.mp4": [1, 78],
-  "squat-final.mp4": [106],
-  "lat-pulldown-final.mp4": [21]
+  "_설명": "자동 매칭이 안 되는 영상을 운동 id(data/exercise_ids.tsv)에 연결한다. 파일명 규칙: {slug}[-side|-back|-top]-final.mp4. files 는 파일명 정확 일치, slugs 는 뷰 접미사와 -final 을 뗀 기본 이름.",
+  "files": {},
+  "slugs": {
+    "shoulder-press": [1, 78],
+    "lat-pulldown": [21],
+    "squat": [106],
+    "bench-press": [103],
+    "cable-seated-row": [24],
+    "one-arm-row": [22],
+    "arnold-press": [16],
+    "barbell-hip-thrust": [108],
+    "bentover-row": [105],
+    "deadlift": [107],
+    "incline-press": [104],
+    "lateral-raise": [5],
+    "overhead-press": [102],
+    "reverse-fly": [8],
+    "bulgarian-split-squat": [65],
+    "dumbbell-bench-press": [75],
+    "dumbbell-fly": [77],
+    "hip-thrust": [69],
+    "incline-dumbbell-press": [76],
+    "leg-press": [89],
+    "pushup": [38],
+    "romanian-deadlift": [60],
+    "walking-lunge": [66]
+  }
 }

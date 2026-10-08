@@ -1,0 +1,115 @@
+id	name	part	equipment
+001	덤벨 숄더 프레스	shoulder	db
+002	케틀벨 프레스	shoulder	kb
+003	밴드 숄더 프레스	shoulder	band
+004	파이크 푸시업	shoulder	body
+005	덤벨 레터럴 레이즈	shoulder	db
+006	밴드 레터럴 레이즈	shoulder	band
+007	케이블 레터럴 레이즈	shoulder	cable
+008	벤트오버 리버스 플라이	shoulder	db
+009	밴드 페이스 풀	shoulder	band
+010	케이블 페이스 풀	shoulder	cable
+011	밴드 풀어파트	shoulder	band
+012	프론 Y 레이즈	shoulder	body
+013	덤벨 프론트 레이즈	shoulder	db
+014	밴드 프론트 레이즈	shoulder	band
+015	케틀벨 헤일로	shoulder	kb
+016	덤벨 아놀드 프레스	shoulder	db
+017	월 워크	shoulder	body
+018	풀업	back	bar
+019	친업	back	bar
+020	밴드 랫 풀다운	back	band
+021	케이블 랫 풀다운	back	cable
+022	원암 로우	back	db,kb
+023	밴드 시티드 로우	back	band
+024	케이블 시티드 로우	back	cable
+025	인버티드 로우	back	body,bar
+026	풀오버	back	db,kb
+027	케이블 스트레이트암 풀다운	back	cable
+028	밴드 스트레이트암 풀다운	back	band
+029	스캐퓰러 풀업	back	bar
+030	밴드 풀어파트 (등)	back	band
+031	프론 T 레이즈	back	body
+032	슈퍼맨	back	body
+033	웨이티드 굿모닝	back	db,kb
+034	밴드 굿모닝 (등)	back	band
+035	플로어 프레스	chest	db,kb
+036	밴드 체스트 프레스	chest	band
+037	케이블 체스트 프레스	chest	cable
+038	푸시업	chest	body
+039	디클라인 푸시업	chest	body
+040	덤벨 인클라인 프레스 (베개)	chest	db
+041	밴드 인클라인 프레스	chest	band
+042	케이블 인클라인 프레스	chest	cable
+043	덤벨 플로어 플라이	chest	db
+044	케이블 크로스오버	chest	cable
+045	밴드 플라이	chest	band
+046	덤벨 스퀴즈 프레스	chest	db
+047	다이아몬드 푸시업	chest	body
+048	케이블 로우 투 하이 플라이	chest	cable
+049	밴드 스퀴즈 프레스	chest	band
+050	케틀벨 크러시 프레스	chest	kb
+051	슬로우 푸시업 (5초)	chest	body
+052	덤벨 얼터네이트 프레스	chest	db
+053	케틀벨 싱글암 플로어 프레스	chest	kb
+054	밴드 싱글암 프레스	chest	band
+055	케이블 싱글암 프레스	chest	cable
+056	고블릿 스쿼트	legs	db,kb
+057	밴드 스쿼트	legs	band
+058	맨몸 스쿼트 (템포)	legs	body
+059	점프 스쿼트	legs	body
+060	루마니안 데드리프트	legs	db,kb
+061	케틀벨 스윙	legs	kb
+062	밴드 굿모닝	legs	band
+063	케이블 풀스루	legs	cable
+064	싱글레그 RDL (맨몸)	legs	body
+065	불가리안 스플릿 스쿼트	legs	body,db,kb
+066	워킹 런지	legs	db,kb
+067	리버스 런지	legs	body
+068	밴드 사이드 스텝	legs	band
+069	힙 쓰러스트	legs	body,db,kb
+070	밴드 힙 어브덕션	legs	band
+071	케이블 킥백	legs	cable
+072	글루트 브릿지	legs	body
+073	카프 레이즈	legs	body,db,kb
+074	싱글레그 카프 레이즈	legs	body
+075	덤벨 벤치 프레스	chest	db,bench
+076	인클라인 덤벨 프레스	chest	db,bench
+077	덤벨 플라이 (벤치)	chest	db,bench
+078	시티드 덤벨 숄더 프레스	shoulder	db,bench
+079	체스트 서포티드 덤벨 로우	back	db,bench
+080	스미스 벤치 프레스	chest	smith
+081	스미스 인클라인 프레스	chest	smith
+082	스미스 숄더 프레스	shoulder	smith
+083	스미스 벤트오버 로우	back	smith
+084	스미스 스쿼트	legs	smith
+085	스미스 루마니안 데드리프트	legs	smith
+086	스미스 스플릿 스쿼트	legs	smith
+087	스미스 힙 쓰러스트	legs	smith
+088	스미스 카프 레이즈	legs	smith
+089	레그 프레스	legs	legpress
+090	싱글레그 프레스	legs	legpress
+091	레그프레스 카프 레이즈	legs	legpress
+092	케이블 로우 로우	back	cable
+093	행잉 레그 레이즈	any	bar
+094	케이블 크런치	any	cable
+095	플랭크	any	body
+096	데드버그	any	body
+097	케이블 리어델트 플라이	shoulder	cable
+098	케이블 프론트 레이즈	shoulder	cable
+099	케이블 업라이트 로우	shoulder	cable
+100	케이블 루마니안 데드리프트	legs	cable
+101	케이블 힙 어브덕션	legs	cable
+102	바벨 오버헤드 프레스	shoulder	bb
+103	바벨 벤치 프레스	chest	bb,bench
+104	바벨 인클라인 프레스	chest	bb,bench
+105	바벨 벤트오버 로우	back	bb
+106	바벨 백 스쿼트	legs	bb
+107	바벨 데드리프트	legs	bb
+108	바벨 힙 쓰러스트	legs	bb
+109	숄더 프레스 머신	shoulder	machine
+110	리어델트 머신	shoulder	machine
+111	체스트 프레스 머신	chest	machine
+112	펙덱 플라이	chest	machine
+113	시티드 로우 머신	back	machine
+114	핵 스쿼트 머신	legs	machine

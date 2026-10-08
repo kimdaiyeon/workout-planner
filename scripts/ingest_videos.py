@@ -1,7 +1,8 @@
 """videos/ 폴더의 영상을 운동에 연결해 data/demo_videos.json 을 만들고 db.js 를 재생성한다.
 
 실행: python3 scripts/ingest_videos.py
-매칭 순서: videos/map.json 수동 지정 → 파일명 앞 숫자(예: 021-lat-pulldown.mp4) → 파일명에 운동 이름 포함
+매칭 순서: map.json files(정확 일치) → 파일명 앞 숫자(예: 021-lat-pulldown.mp4) → map.json slugs(뷰 접미사·-final 제거 후) → 파일명에 운동 이름 포함
+뷰: 파일명 끝의 -side/-back/-top 을 읽고 없으면 front
 메타데이터(길이·해상도)는 macOS `mdls` 로 읽는다. 없으면 용량만 기록.
 """
 import json, re, subprocess, pathlib, sys
@@ -54,23 +55,30 @@ def main():
     exercises = json.loads((DATA / "exercises.json").read_text(encoding="utf8"))
     by_id = {e["id"]: e for e in exercises}
     norm = lambda s: re.sub(r"[\s_\-()]+", "", s).lower()
-    manual = {k: v for k, v in json.loads((VID / "map.json").read_text(encoding="utf8")).items() if not k.startswith("_")}
+    mp = json.loads((VID / "map.json").read_text(encoding="utf8"))
+    manual, slugs = mp.get("files", {}), mp.get("slugs", {})
     files = sorted(p for p in VID.iterdir() if p.suffix.lower() in EXTS)
     videos, unmatched = [], []
     for p in files:
         ids, how = [], ""
-        if p.name in manual: ids, how = manual[p.name], "map.json"
+        stem = re.sub(r"-final$", "", p.stem.lower())
+        vm = re.search(r"-(side|back|top|front)$", stem)
+        view = vm[1] if vm else "front"
+        base = stem[:vm.start()] if vm else stem
+        base = re.sub(r"^\d{1,3}-", "", base)
+        if p.name in manual: ids, how = manual[p.name], "map.json files"
         elif (m := re.match(r"^(\d{1,3})\b", p.stem)) and int(m[1]) in by_id: ids, how = [int(m[1])], "id prefix"
+        elif base in slugs: ids, how = slugs[base], "map.json slugs"
         else:
             n = norm(p.stem)
             hits = [e["id"] for e in exercises if norm(e["name"]) in n]
             if hits: ids, how = hits, "name match"
         if not ids: unmatched.append(p.name); continue
-        videos.append({"file": p.name, "exercises": ids, "bytes": p.stat().st_size, "matched_by": how, **meta(p)})
+        videos.append({"file": p.name, "exercises": ids, "view": view, "bytes": p.stat().st_size, "matched_by": how, **meta(p)})
     (DATA / "demo_videos.json").write_text(json.dumps(videos, ensure_ascii=False, indent=1), encoding="utf8")
     covered = {i for v in videos for i in v["exercises"]}
     print(f"영상 {len(files)}개 중 연결 {len(videos)}개, 운동 {len(covered)}/{len(exercises)}개 커버")
-    for v in videos: print(f"  {v['file']} → {', '.join(by_id[i]['name'] for i in v['exercises'])} ({v['matched_by']}, {v.get('duration_sec')}s {v.get('width')}x{v.get('height')})")
+    for v in videos: print(f"  {v['file']} → {', '.join(by_id[i]['name'] for i in v['exercises'])} [{v['view']}] ({v['matched_by']}, {v.get('duration_sec')}s {v.get('width')}x{v.get('height')})")
     if unmatched:
         print("연결 못 한 파일 (videos/map.json 에 수동 지정 필요):"); [print("  ", u) for u in unmatched]
     sys.path.insert(0, str(ROOT / "scripts")); import build_data; build_data.main()

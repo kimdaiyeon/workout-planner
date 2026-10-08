@@ -117,9 +117,13 @@ function openDetail(e){
   const d = $("#detail");
   const mbtn = (c, cls) => `<button class="${cls||""}" data-m="${c}">${M[c].name}</button>`;
   const ebtn = c => `<button data-eq="${c}">${EQ[c].name}<small style="color:var(--muted)"> · ${CAT[EQ[c].category].name}</small></button>`;
-  const vid = (DB.demo_videos||[]).find(v=>v.exercises.includes(e.id));
+  const VIEW = {front:"정면", side:"측면", back:"후면", top:"상단"};
+  const order = ["front","side","back","top"];
+  const vids = (DB.demo_videos||[]).filter(v=>v.exercises.includes(e.id)).sort((a,b)=>order.indexOf(a.view)-order.indexOf(b.view));
+  const vid = vids[0];
   const demo = vid
-    ? `<video class="demo" src="../videos/${vid.file}" controls loop muted playsinline preload="metadata"></video><p class="demo-cap">시연 영상 · ${vid.file}</p>`
+    ? `<video class="demo" src="../videos/${vid.file}" controls loop muted playsinline preload="metadata"></video>
+       <p class="demo-cap">${vids.length>1 ? `<span class="views">${vids.map((v,i)=>`<button data-v="${i}" aria-pressed="${i===0}">${VIEW[v.view]||v.view}</button>`).join("")}</span>` : `시연 영상 · ${VIEW[vid.view]||vid.view}`}</p>`
     : `<svg class="demo" role="img" aria-label="${e.name} 동작 시연"></svg><p class="demo-cap">동작 시연 · 파란색이 기구</p>`;
   d.innerHTML = `
     <div class="top"><div><h3>${e.name}</h3><div class="meta">${PART[e.part].name} · ${PAT[e.part+"/"+e.pattern].name} · 우선순위 ${e.priority}</div></div>
@@ -138,6 +142,9 @@ function openDetail(e){
       </div>
     </div>`;
   d.querySelector(".close").addEventListener("click", ()=>$("#dlg").close());
+  d.querySelectorAll(".views button").forEach(b=>b.addEventListener("click", ()=>{
+    const v = vids[Number(b.dataset.v)]; const el = d.querySelector("video.demo"); el.src = "../videos/"+v.file; el.play().catch(()=>{});
+    d.querySelectorAll(".views button").forEach(x=>x.setAttribute("aria-pressed", x===b)); }));
   d.querySelectorAll("[data-m]").forEach(b=>b.addEventListener("click", ()=>{ state.m.clear(); state.m.add(b.dataset.m); $("#dlg").close(); render(); }));
   d.querySelectorAll("[data-eq]").forEach(b=>b.addEventListener("click", ()=>{ state.eq.clear(); state.cat.clear(); state.eq.add(b.dataset.eq); $("#dlg").close(); render(); }));
   const dlg = $("#dlg"); dlg.showModal();
