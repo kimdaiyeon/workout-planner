@@ -1,0 +1,107 @@
+[
+ {
+  "part": "back",
+  "code": "vertical",
+  "name": "수직 당기기"
+ },
+ {
+  "part": "back",
+  "code": "horizontal",
+  "name": "수평 당기기"
+ },
+ {
+  "part": "back",
+  "code": "lat",
+  "name": "광배 고립"
+ },
+ {
+  "part": "back",
+  "code": "scap",
+  "name": "견갑 조절"
+ },
+ {
+  "part": "back",
+  "code": "extension",
+  "name": "등 신전"
+ },
+ {
+  "part": "chest",
+  "code": "press",
+  "name": "체스트 프레스"
+ },
+ {
+  "part": "chest",
+  "code": "upper",
+  "name": "상부 가슴"
+ },
+ {
+  "part": "chest",
+  "code": "fly",
+  "name": "플라이"
+ },
+ {
+  "part": "chest",
+  "code": "inner",
+  "name": "가슴 안쪽"
+ },
+ {
+  "part": "chest",
+  "code": "stability",
+  "name": "가슴 안정화"
+ },
+ {
+  "part": "legs",
+  "code": "squat",
+  "name": "스쿼트"
+ },
+ {
+  "part": "legs",
+  "code": "hinge",
+  "name": "힙 힌지"
+ },
+ {
+  "part": "legs",
+  "code": "unilateral",
+  "name": "한발 운동"
+ },
+ {
+  "part": "legs",
+  "code": "glute",
+  "name": "둔근"
+ },
+ {
+  "part": "legs",
+  "code": "calf",
+  "name": "종아리"
+ },
+ {
+  "part": "shoulder",
+  "code": "press",
+  "name": "숄더 프레스"
+ },
+ {
+  "part": "shoulder",
+  "code": "lateral",
+  "name": "사이드 레이즈"
+ },
+ {
+  "part": "shoulder",
+  "code": "rear",
+  "name": "후면 삼각근"
+ },
+ {
+  "part": "shoulder",
+  "code": "front",
+  "name": "프론트 레이즈"
+ },
+ {
+  "part": "shoulder",
+  "code": "stability",
+  "name": "어깨 안정화"
+ },
+ {
+  "part": "any",
+  "code": "core",
+  "name": "코어"
+ }
+]

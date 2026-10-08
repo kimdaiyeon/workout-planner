@@ -1,0 +1,22 @@
+[
+ {
+  "code": "bodyweight",
+  "name": "맨몸"
+ },
+ {
+  "code": "free_weight",
+  "name": "프리웨이트"
+ },
+ {
+  "code": "band",
+  "name": "밴드"
+ },
+ {
+  "code": "machine",
+  "name": "머신"
+ },
+ {
+  "code": "support",
+  "name": "보조 기구"
+ }
+]

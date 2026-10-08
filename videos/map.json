@@ -1,0 +1,6 @@
+{
+  "_설명": "파일명으로 자동 매칭이 안 되는 영상을 운동 id(data/exercises.json)에 수동 연결한다. 자동 매칭: 파일명이 '숫자-' 로 시작하면 그 번호, 아니면 운동 이름이 파일명에 포함되는지로 찾는다.",
+  "shoulder-press-final.mp4": [1, 78],
+  "squat-final.mp4": [106],
+  "lat-pulldown-final.mp4": [21]
+}

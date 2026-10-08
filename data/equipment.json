@@ -1,0 +1,57 @@
+[
+ {
+  "code": "body",
+  "name": "맨몸",
+  "category": "bodyweight"
+ },
+ {
+  "code": "bar",
+  "name": "풀업바",
+  "category": "bodyweight"
+ },
+ {
+  "code": "db",
+  "name": "덤벨",
+  "category": "free_weight"
+ },
+ {
+  "code": "kb",
+  "name": "케틀벨",
+  "category": "free_weight"
+ },
+ {
+  "code": "bb",
+  "name": "바벨",
+  "category": "free_weight"
+ },
+ {
+  "code": "band",
+  "name": "밴드",
+  "category": "band"
+ },
+ {
+  "code": "cable",
+  "name": "케이블머신",
+  "category": "machine"
+ },
+ {
+  "code": "smith",
+  "name": "스미스머신",
+  "category": "machine"
+ },
+ {
+  "code": "legpress",
+  "name": "레그프레스",
+  "category": "machine"
+ },
+ {
+  "code": "machine",
+  "name": "머신(기타)",
+  "category": "machine"
+ },
+ {
+  "code": "bench",
+  "name": "벤치",
+  "category": "support"
+ }
+]

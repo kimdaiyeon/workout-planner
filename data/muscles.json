@@ -1,0 +1,158 @@
+[
+ {
+  "code": "delt_front",
+  "name": "전면 삼각근",
+  "en": "Anterior deltoid",
+  "part": "shoulder"
+ },
+ {
+  "code": "delt_side",
+  "name": "측면 삼각근",
+  "en": "Lateral deltoid",
+  "part": "shoulder"
+ },
+ {
+  "code": "delt_rear",
+  "name": "후면 삼각근",
+  "en": "Posterior deltoid",
+  "part": "shoulder"
+ },
+ {
+  "code": "rotator_cuff",
+  "name": "회전근개",
+  "en": "Rotator cuff",
+  "part": "shoulder"
+ },
+ {
+  "code": "trap_upper",
+  "name": "상부 승모근",
+  "en": "Upper trapezius",
+  "part": "shoulder"
+ },
+ {
+  "code": "lats",
+  "name": "광배근",
+  "en": "Latissimus dorsi",
+  "part": "back"
+ },
+ {
+  "code": "trap_mid",
+  "name": "중·하부 승모근",
+  "en": "Mid/lower trapezius",
+  "part": "back"
+ },
+ {
+  "code": "rhomboids",
+  "name": "능형근",
+  "en": "Rhomboids",
+  "part": "back"
+ },
+ {
+  "code": "erectors",
+  "name": "척추기립근",
+  "en": "Erector spinae",
+  "part": "back"
+ },
+ {
+  "code": "pec_upper",
+  "name": "상부 대흉근",
+  "en": "Upper pectoralis",
+  "part": "chest"
+ },
+ {
+  "code": "pec_mid",
+  "name": "중부 대흉근",
+  "en": "Mid pectoralis",
+  "part": "chest"
+ },
+ {
+  "code": "pec_lower",
+  "name": "하부 대흉근",
+  "en": "Lower pectoralis",
+  "part": "chest"
+ },
+ {
+  "code": "serratus",
+  "name": "전거근",
+  "en": "Serratus anterior",
+  "part": "chest"
+ },
+ {
+  "code": "biceps",
+  "name": "이두근",
+  "en": "Biceps",
+  "part": "arm"
+ },
+ {
+  "code": "triceps",
+  "name": "삼두근",
+  "en": "Triceps",
+  "part": "arm"
+ },
+ {
+  "code": "quads",
+  "name": "대퇴사두근",
+  "en": "Quadriceps",
+  "part": "legs"
+ },
+ {
+  "code": "hams",
+  "name": "햄스트링",
+  "en": "Hamstrings",
+  "part": "legs"
+ },
+ {
+  "code": "glute_max",
+  "name": "대둔근",
+  "en": "Gluteus maximus",
+  "part": "legs"
+ },
+ {
+  "code": "glute_med",
+  "name": "중둔근",
+  "en": "Gluteus medius",
+  "part": "legs"
+ },
+ {
+  "code": "adductors",
+  "name": "내전근",
+  "en": "Adductors",
+  "part": "legs"
+ },
+ {
+  "code": "gastroc",
+  "name": "비복근",
+  "en": "Gastrocnemius",
+  "part": "legs"
+ },
+ {
+  "code": "soleus",
+  "name": "가자미근",
+  "en": "Soleus",
+  "part": "legs"
+ },
+ {
+  "code": "hip_flexors",
+  "name": "장요근",
+  "en": "Hip flexors",
+  "part": "legs"
+ },
+ {
+  "code": "abs",
+  "name": "복직근",
+  "en": "Rectus abdominis",
+  "part": "any"
+ },
+ {
+  "code": "obliques",
+  "name": "복사근",
+  "en": "Obliques",
+  "part": "any"
+ },
+ {
+  "code": "transverse",
+  "name": "복횡근",
+  "en": "Transverse abdominis",
+  "part": "any"
+ }
+]

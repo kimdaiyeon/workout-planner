@@ -1,0 +1,22 @@
+[
+ {
+  "code": "shoulder",
+  "name": "어깨"
+ },
+ {
+  "code": "back",
+  "name": "등"
+ },
+ {
+  "code": "chest",
+  "name": "가슴"
+ },
+ {
+  "code": "legs",
+  "name": "하체"
+ },
+ {
+  "code": "any",
+  "name": "코어"
+ }
+]
